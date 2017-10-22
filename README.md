@@ -11,6 +11,10 @@ Development of database-based system in Django
     pipenv --python 3.6
     pipenv install
 
+    # configure and init database
+    vi .env
+    pipenv run ./init_database.sh
+
 # Features
 
 ## Registration
