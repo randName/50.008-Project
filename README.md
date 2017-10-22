@@ -1,6 +1,16 @@
 # 50.008 Database Project
 Development of database-based system in Django
 
+# Setup
+    # MariaDB
+    sudo apt-get install mariadb-server libmysqlclient-dev
+    sudo mysql_secure_installation
+
+    # Pipenv
+    pip install pipenv
+    pipenv --python 3.6
+    pipenv install
+
 # Features
 
 ## Registration
@@ -29,7 +39,7 @@ Using Django's auth mode and session DB module.
 - A user is able to order items in any quantity and type
 - Payment and Delivery not implemented
 
-## Reccomendation
+## Recommendation
 - Upon ordering item A, suggest item B if there exists a user that bought both A and B
 - Sorted by sales to users who bought both items
 
