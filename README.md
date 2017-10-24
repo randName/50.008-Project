@@ -12,8 +12,9 @@ Development of database-based system in Django
     pipenv install
 
     # configure and init database
+    cp .env.example .env
     vi .env
-    pipenv run ./init_database.sh
+    pipenv run ./db.sh init
 
 # Features
 
