@@ -9,6 +9,7 @@ usage() {
 	echo "    init    create new user and db, generate option file, migrate, load schema"
 	echo "    drop    drop db and user"
 	echo "    reset   drop then recreate db, migrate, load schema"
+	echo "    shell   launch shell prompt"
 	exit 1
 }
 
@@ -67,6 +68,11 @@ migrate() {
 	python manage.py migrate
 }
 
+myshell() {
+	echo "Entering shell…"
+	mysql ${DB_OPT}
+}
+
 [ -z "$1" ] && usage
 
 if [ -z ${DATABASE_NAME} ]; then
@@ -77,9 +83,9 @@ fi
 
 case "$1" in
 	init)
+		gen_cnf
 		create_user
 		create_db
-		gen_cnf
 		migrate
 		load_schema
 		;;
@@ -92,6 +98,9 @@ case "$1" in
 		create_db
 		migrate
 		load_schema
+		;;
+	shell)
+		myshell
 		;;
 	*)
 		usage
