@@ -1,0 +1,16 @@
+{% load staticfiles %}
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block head_javascript %}{% endblock %}
+    {% block head_css %}{% endblock %}
+  </head>
+  <body>
+    {% block nav %}{% endblock %}
+    {% block content %}{% endblock %}
+    {% block body_javascript %}{% endblock %}
+  </body>
+</html>
