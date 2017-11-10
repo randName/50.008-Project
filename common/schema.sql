@@ -49,23 +49,23 @@ CREATE TABLE item_creator(
 /* FEEDBACK */
 
 CREATE TABLE feedback(
-    id INTEGER AUTO_INCREMENT,
     item_id INTEGER,
     user_id INTEGER,
     score INTEGER NOT NULL,
     review TEXT NOT NULL,
     FOREIGN KEY (item_id) REFERENCES item(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES auth_user(id) ON DELETE CASCADE,
-    PRIMARY KEY (id, item_id, user_id)
+    PRIMARY KEY (item_id, user_id)
 );
 
 CREATE TABLE rating(
+    item_id INTEGER,
     user_id INTEGER,
-    feedback_id INTEGER,
+    rater_id INTEGER,
     usefulness INTEGER NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES auth_user(id) ON DELETE CASCADE,
-    FOREIGN KEY (feedback_id) REFERENCES feedback(id) ON DELETE CASCADE,
-    PRIMARY KEY (user_id, feedback_id)
+    FOREIGN KEY (item_id, user_id) REFERENCES feedback(item_id, user_id) ON DELETE CASCADE,
+    FOREIGN KEY (rater_id) REFERENCES auth_user(id) ON DELETE CASCADE,
+    PRIMARY KEY (item_id, user_id, rater_id)
 );
 
 /* ORDERS */
