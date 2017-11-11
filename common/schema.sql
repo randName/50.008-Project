@@ -51,6 +51,7 @@ CREATE TABLE item_creator(
 CREATE TABLE feedback(
     item_id INTEGER,
     user_id INTEGER,
+    made_on DATETIME NOT NULL,
     score INTEGER NOT NULL,
     review TEXT NOT NULL,
     FOREIGN KEY (item_id) REFERENCES item(id) ON DELETE CASCADE,
@@ -73,7 +74,7 @@ CREATE TABLE rating(
 CREATE TABLE purchase(
     id INTEGER AUTO_INCREMENT,
     user_id INTEGER NOT NULL,
-    ordered DATETIME NOT NULL,
+    made_on DATETIME NOT NULL,
     total NUMERIC(10,2) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES auth_user(id) ON DELETE CASCADE,
     PRIMARY KEY (id)
