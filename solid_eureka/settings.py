@@ -24,6 +24,7 @@ def get_env_variable(key):
         from django.core.exceptions import ImproperlyConfigured
         raise ImproperlyConfigured('Environment Variable not set: %s' % key)
 
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = get_env_variable('DJANGO_SECRET_KEY')
 
@@ -42,6 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'manager.apps.ManagerConfig',
+    'orders.apps.OrdersConfig',
     'users.apps.UsersConfig',
     'shop.apps.ShopConfig',
 ]
@@ -130,7 +133,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_URLS = [
+STATICFILES_DIRS = [
     'common/static',
 ]
 
