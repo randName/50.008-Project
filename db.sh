@@ -54,18 +54,24 @@ gen_cnf() {
 }
 
 load_schema() {
-	if [ ! -e schema.sql ]; then
+	if [ ! -e common/schema.sql ]; then
 		echo "Error: schema.sql not found."
 		exit 1
 	fi
 	echo -n "Loading table schema…"
-	mysql ${DB_OPT} < schema.sql
+	mysql ${DB_OPT} < common/schema.sql
 	echo " OK"
 }
 
 migrate() {
 	echo "Running migrations…"
 	python manage.py migrate
+}
+
+load_fixtures() {
+	echo "Loading fixtures…"
+	python manage.py loaddata users.json
+	echo " OK"
 }
 
 myshell() {
@@ -88,6 +94,7 @@ case "$1" in
 		create_db
 		migrate
 		load_schema
+		load_fixtures
 		;;
 	drop)
 		drop_db
@@ -98,6 +105,7 @@ case "$1" in
 		create_db
 		migrate
 		load_schema
+		load_fixtures
 		;;
 	shell)
 		myshell
