@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block css %}
+{{ block.super }}
+<link href='//fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet" type="text/css">
+<link href="//unpkg.com/vuetify/dist/vuetify.min.css" rel="stylesheet" type="text/css"></link>
+{% endblock %}
+
+{% block javascript %}
+{{ block.super }}
+<script src="//unpkg.com/vue"></script>
+<script src="//unpkg.com/axios/dist/axios.min.js"></script>
+<script src="//unpkg.com/vuetify/dist/vuetify.js"></script>
+<script src="//unpkg.com/vue-router/dist/vue-router.js"></script>
+{% endblock %}
+
+{% block content %}
+{{ block.super }}
+<v-app id="app" dark>
+  {% block v-nav %}
+  <v-toolbar app fixed clipped-left>
+    <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+    <v-toolbar-title>Solid Eureka</v-toolbar-title>
+    <v-spacer></v-spacer>
+    <v-btn icon>
+      <v-icon>search</v-icon>
+    </v-btn>
+  </v-toolbar>
+  <v-navigation-drawer clipped fixed app v-model="drawer">
+    <v-list dense>
+      <v-list-tile avatar @click="href('{% url 'login' %}')">
+        <v-list-tile-action>
+          <v-icon>account_circle</v-icon>
+        </v-list-tile-action>
+        <v-list-tile-content>
+          <v-list-tile-title>Sign In</v-list-tile-title>
+        </v-list-tile-content>
+      </v-list-tile>
+      <v-divider></v-divider>
+      <v-list-tile @click="">
+        <v-list-tile-action>
+          <v-icon>store</v-icon>
+        </v-list-tile-action>
+        <v-list-tile-content>
+          <v-list-tile-title>Store</v-list-tile-title>
+        </v-list-tile-content>
+      </v-list-tile>
+      <v-list-tile @click="">
+        <v-list-tile-action>
+          <v-icon>shopping_cart</v-icon>
+        </v-list-tile-action>
+        <v-list-tile-content>
+          <v-list-tile-title>Cart</v-list-tile-title>
+        </v-list-tile-content>
+      </v-list-tile>
+    </v-list>
+  </v-navigation-drawer>
+  {% endblock %}
+  <v-content>
+  {% block v-content %}
+  {% endblock %}
+  </v-content>
+</v-app>
+{% block v-script %}
+<script src="{% static 'js/app.js' %}"></script>
+{% endblock %}
+{% endblock %}

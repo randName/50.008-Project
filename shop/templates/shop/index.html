@@ -1,8 +1,14 @@
-{% extends 'base.html' %}
+{% extends 'vue-base.html' %}
 
 {% block title %}Solid Eureka{% endblock %}
 
-{% block content %}
-<h1>Hello World! Welcome to the main page.</h1>
-<a href="{% url 'login' %}">Login</a>
+{% block v-content %}
+<v-container>
+</v-container>
+{% endblock %}
+
+{% block v-script %}
+{{ block.super }}
+<script>
+</script>
 {% endblock %}

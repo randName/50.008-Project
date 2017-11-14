@@ -2,7 +2,8 @@
 
 {% block title %}Permission Denied{% endblock %}
 
-{% block javascript %}
+{% block meta %}
+{{ block.super }}
 <meta http-equiv="refresh" content="3;url={% url 'index' %}">
 {% endblock %}
 
