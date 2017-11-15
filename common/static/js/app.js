@@ -1,11 +1,24 @@
-var app = new Vue({
+var options = {
   el: '#app',
   delimiters: ['[', ']'],
   data: {
     'drawer': false,
-    'forms': {},
-    'page': '',
-    'ajax': ''
+    'usergp': {
+      'active': false,
+      'list': []
+    },
+    'routes': [
+      {
+        'path': '/store',
+        'title': 'Store',
+        'action': 'store'
+      },
+      {
+        'path': '/cart',
+        'title': 'Cart',
+        'action': 'shopping_cart'
+      }
+    ]
   },
   methods: {
     loadJSON: function(url, success, error){
@@ -20,9 +33,6 @@ var app = new Vue({
         console.log(e);
         if (error) error(e);
       });
-    },
-    href: function(url){
-      window.location = url;
     }
   }
-});
+};

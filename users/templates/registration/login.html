@@ -24,7 +24,7 @@
     ></v-text-field>
     {% endfor %}
     <v-btn type="submit">Login</v-btn>
-    <v-btn @click="href('{% url 'registration' %}')">Register</v-btn>
+    <v-btn href="{% url 'registration' %}">Register</v-btn>
   </v-form>
 </v-container>
 {% endblock %}
@@ -32,7 +32,7 @@
 {% block v-script %}
 {{ block.super }}
 <script>
-app.forms = {
+options.data.forms = {
   'pw': true
 };
 </script>
