@@ -71,7 +71,15 @@ migrate() {
 load_fixtures() {
 	echo "Loading fixtures…"
 	python manage.py loaddata users.json
-	echo " OK"
+}
+
+load_data() {
+	echo "Loading data:"
+	for d in data/*.sql; do
+		echo -n "  Importing $( basename ${d%.*} )... "
+		mysql ${DB_OPT} < $d
+		echo "OK"
+	done
 }
 
 myshell() {
@@ -95,6 +103,7 @@ case "$1" in
 		migrate
 		load_schema
 		load_fixtures
+		load_data
 		;;
 	drop)
 		drop_db
@@ -106,6 +115,7 @@ case "$1" in
 		migrate
 		load_schema
 		load_fixtures
+		load_data
 		;;
 	shell)
 		myshell

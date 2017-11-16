@@ -1,0 +1,16 @@
+INSERT INTO category (id, name) VALUES
+(23, "Play"),
+(44, "Food"),
+(12, "Music"),
+(11, "Video"),
+(32, "Travel"),
+(28, "Office"),
+(45, "Health"),
+(37, "Family"),
+(39, "Fashion"),
+(33, "Lesiure"),
+(35, "Outdoor"),
+(22, "Education"),
+(41, "Household"),
+(46, "Automotive"),
+(17, "Electronics")
