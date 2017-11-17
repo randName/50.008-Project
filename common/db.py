@@ -2,19 +2,18 @@ from django.db import connection, DatabaseError
 
 
 def sql(query, *params):
-    """Get dictionary from raw SQL query."""
-    try:
-        with connection.cursor() as cur:
-            cur.execute(query, params)
-            return {'data': cur.fetchall()}
-    except DatabaseError as e:
-        return {
-            'error': {
-                'code': e.args[0],
-                'type': type(e).__name__,
-                'message': ' '.join(e.args[1:]),
-            },
-        }
+    """Get rows from raw SQL query."""
+    with connection.cursor() as cur:
+        cur.execute(query, params)
+        return cur.fetchall()
+
+
+def error_to_dict(error):
+    return {
+        'code': error.args[0],
+        'error': type(error).__name__,
+        'message': ' '.join(error.args[1:]),
+    }
 
 
 def page(page=1, per_page=20, sort=None):

@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
@@ -28,14 +29,14 @@ def registration(request):
 @login_required
 def profile(request):
     """Show profile of logged-in user."""
-    return render(request, 'users/profile.html', {'user': request.user})
+    return render(request, 'users/profile.html')
 
 
 @json_response
 def orders(request):
     """Get order history of logged-in user."""
     if not request.user.is_authenticated:
-        return NOT_LOGGED_IN
+        raise PermissionDenied
 
     q = 'SELECT id, made_on, total FROM purchase WHERE user_id = %s'
     pg = pagination(request)
@@ -47,9 +48,13 @@ def orders(request):
 def feedbacks(request):
     """Get feedback made by logged-in user."""
     if not request.user.is_authenticated:
-        return NOT_LOGGED_IN
+        raise PermissionDenied
 
-    q = 'SELECT item_id, made_on, score FROM feedback WHERE user_id = %s'
+    q = """SELECT item_id, name, made_on, score, review
+            FROM feedback INNER JOIN item
+            ON item.id = feedback.item_id
+            WHERE user_id = %s"""
+
     pg = pagination(request)
 
     return sql(q + page(**pg), request.user.id)
@@ -59,7 +64,7 @@ def feedbacks(request):
 def ratings(request):
     """Get feedback rated by logged-in user."""
     if not request.user.is_authenticated:
-        return NOT_LOGGED_IN
+        raise PermissionDenied
 
     q = """SELECT usefulness, r.item_id, r.user_id, score, review
             FROM rating r INNER JOIN feedback f
