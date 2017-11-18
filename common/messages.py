@@ -1,3 +1,5 @@
-NOT_LOGGED_IN = {'error': 'not logged-in'}
+NOT_LOGGED_IN = 'not logged-in'
 
-NO_PERMISSION = {'error': 'permission denied'}
+NOT_STAFF = 'not staff'
+
+WRONG_ACCOUNT = 'wrong account'

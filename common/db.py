@@ -1,4 +1,4 @@
-from django.db import connection, DatabaseError
+from django.db import connection
 
 
 def sql(query, *params):
@@ -6,14 +6,6 @@ def sql(query, *params):
     with connection.cursor() as cur:
         cur.execute(query, params)
         return cur.fetchall()
-
-
-def error_to_dict(error):
-    return {
-        'code': error.args[0],
-        'error': type(error).__name__,
-        'message': ' '.join(error.args[1:]),
-    }
 
 
 def page(page=1, per_page=20, sort=None):
