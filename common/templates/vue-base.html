@@ -13,6 +13,7 @@
 <script src="//unpkg.com/axios/dist/axios.min.js"></script>
 <script src="//unpkg.com/vuetify/dist/vuetify.js"></script>
 <script src="//unpkg.com/vue-router/dist/vue-router.js"></script>
+<script src="//unpkg.com/moment"></script>
 {% endblock %}
 
 {% block content %}
@@ -23,10 +24,12 @@
   <v-toolbar app fixed clipped-left>
     <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
     <v-toolbar-title>Solid Eureka</v-toolbar-title>
+    {% if request.get_full_path == index_url %}
     <v-spacer></v-spacer>
     <v-btn icon>
       <v-icon>search</v-icon>
     </v-btn>
+    {% endif %}
   </v-toolbar>
   <v-navigation-drawer clipped fixed app v-model="drawer">
     <v-list dense>
