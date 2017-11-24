@@ -72,8 +72,43 @@ def item(request, item_id=None):
 @json_response
 def search(request):
     """Search for item."""
-    return {}
+    q = """SELECT item.name, item.id, item.company_id, item.description, item.price, item.quantity, item.date_created, item_creator.creator_id, item_category.category_id, feedback.avg_score
+                FROM item, item_creator, item_category WHERE item.id = item_category.id AND item.id = item_creator.id"""
+    q1 = """name = {0}""".format(request.name)
+    q2 = """company_id = {0}""".format(request.company_id)
+    q3 = """category_id = {0}""".format(request.category_id)
+    q4 = """creator_id = {0}""".format(request.creator_id)
+    q5 = """ORDER BY item.date_created"""
+    q6 = """ORDER BY avg_score"""
+    q7 = """UNION (SELECT AVERAGE(score) AS avg_score FROM feedback GROUP BY item_id)"""
+    if request.name == 'None':
+        q1 = """"""
+    elif request.company_id == 'None':
+        q2 = """"""
+    elif request.category_id == 'None':
+        q3 = """"""
+    elif request.creator_id == 'None':
+        q4 = """"""
+    elif request.sortmethod == 'year':
+        q6 = """"""
+    elif request.sortmethod == 'avergae score':
+        q5 = """"""
 
+    q = q+ """AND""" + q1 +  """AND""" + q2 + """AND""" + q3 + """AND""" + q4 + """AND"""+ q7 + q5 + q6
+    pg = pagination(request)
+    for it in sql(q+page(**pg)):
+        yield {
+            'name': it[0],
+            'id': it[1],
+            'company_id': it[2],
+            'description': it[3],
+            'price': it[4],
+            'quantity': it[5],
+            'date_created': it[6],
+            'creator_id': it[7],
+            'category_id': it[8],
+            'average_score': it[9]
+        }
 
 @json_response
 def feedback(request):
