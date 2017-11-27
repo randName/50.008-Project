@@ -5,8 +5,8 @@ from django.core.exceptions import PermissionDenied
 
 from common.db import sql, page
 from common.utils import pagination
-from common.decorators import json_response
 from common.messages import NOT_LOGGED_IN
+from common.decorators import json_response
 
 
 def index(request):
@@ -72,15 +72,16 @@ def item(request, item_id=None):
 @json_response
 def search(request):
     """Search for item."""
-    q = """SELECT name, id, score FROM item
+    q = """SELECT id, name, score FROM item
             INNER JOIN (SELECT item_id, AVG(score) AS score FROM feedback
                 GROUP BY item_id) f ON item.id = f.item_id"""
     pg = pagination(request)
-    for it in sql(q + page(**pg)):
+
+    for row in sql(q + page(**pg)):
         yield {
-            'name': it[0],
-            'id': it[1],
-            'score': it[2],
+            'id': row[0],
+            'name': row[1],
+            'score': row[2],
         }
 
 
