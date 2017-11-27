@@ -1,19 +1,3 @@
-/* USER */
-CREATE TABLE auth_user(
-    id INTEGER AUTO_INCREMENT,
-    password VARCHAR(128),
-    is_superuser BOOLEAN,
-    is_staff BOOLEAN,
-    is_active BOOLEAN,
-    username VARCHAR (150) NOT NULL UNIQUE,
-    first_name VARCHAR(30) NOT NULL,
-    last_name VARCHAR(30) NOT NULL,
-    email VARCHAR(254) NOT NULL,
-    date_joined DATETIME,
-    PRIMARY KEY (id)
-);
-
-
 /* ITEMS */
 
 CREATE TABLE category(
