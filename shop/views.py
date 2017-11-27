@@ -1,3 +1,5 @@
+from json import loads
+
 from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
 
@@ -5,8 +7,6 @@ from common.db import sql, page
 from common.utils import pagination
 from common.decorators import json_response
 from common.messages import NOT_LOGGED_IN
-
-import datetime
 
 
 def index(request):
@@ -72,120 +72,78 @@ def item(request, item_id=None):
 @json_response
 def search(request):
     """Search for item."""
-    q = """SELECT item.name, item.id, item.company_id, item.description, item.price, item.quantity, item.date_created, item_creator.creator_id, item_category.category_id, feedback.avg_score
-                FROM item, item_creator, item_category WHERE item.id = item_category.id AND item.id = item_creator.id"""
-    q1 = """name = {0}""".format(request.name)
-    q2 = """company_id = {0}""".format(request.company_id)
-    q3 = """category_id = {0}""".format(request.category_id)
-    q4 = """creator_id = {0}""".format(request.creator_id)
-    q5 = """ORDER BY item.date_created"""
-    q6 = """ORDER BY avg_score"""
-    q7 = """UNION (SELECT AVERAGE(score) AS avg_score FROM feedback GROUP BY item_id)"""
-    if request.name == 'None':
-        q1 = """"""
-    elif request.company_id == 'None':
-        q2 = """"""
-    elif request.category_id == 'None':
-        q3 = """"""
-    elif request.creator_id == 'None':
-        q4 = """"""
-    elif request.sortmethod == 'year':
-        q6 = """"""
-    elif request.sortmethod == 'avergae score':
-        q5 = """"""
-
-    q = q+ """AND""" + q1 +  """AND""" + q2 + """AND""" + q3 + """AND""" + q4 + """AND"""+ q7 + q5 + q6
+    q = """SELECT name, id, score FROM item
+            INNER JOIN (SELECT item_id, AVG(score) AS score FROM feedback
+                GROUP BY item_id) f ON item.id = f.item_id"""
     pg = pagination(request)
-    for it in sql(q+page(**pg)):
+    for it in sql(q + page(**pg)):
         yield {
             'name': it[0],
             'id': it[1],
-            'company_id': it[2],
-            'description': it[3],
-            'price': it[4],
-            'quantity': it[5],
-            'date_created': it[6],
-            'creator_id': it[7],
-            'category_id': it[8],
-            'average_score': it[9]
+            'score': it[2],
         }
+
 
 @json_response
 def feedback(request):
     """Get or submit feedback for item."""
-    # use username and bookname as input
-    q = """SELECT id FROM auth_user WHERE username = {}""".format(request.username)
-    pg = pagination(request)
-    try:
-        user_id = sql(q + page(**pg))[0][0]
-    except:
-        return None
-    q = """SELECT id FROM item WHERE name = {}""".format(request.bookname)
-    try:
-        book_id = sql(q + page(**pg))[0][0]
-    except:
-        return None
-    if request.func=='get':
-        q = """SELECT review FROM feedback WHERE user_id = {0} AND item_id = {1}""".format(user_id,book_id)
-        for row in sql(q + page(**pg)):
-            yield {
-                'review': row[0]
-            }
-    else:
-        q = """INSERT INTO feedback (item_id, user_id, score, review, made_on) VALUES ({0},{1},{2},{3},{4})""".format(book_id,user_id,request.score,request.review,datetime.datetime.now())
-        sql(q+page(**pg))
-        return None
+    q = """SELECT score, review, made_on, user_id, username, item_id, name
+            FROM feedback
+            INNER JOIN auth_user ON feedback.user_id = auth_user.id
+            INNER JOIN item ON feedback.item_id = item.id
+            WHERE item_id = %s"""
 
+    if request.method == 'GET':
+        item_id = request.GET.get('item_id')
+        pg = pagination(request)
+
+        return sql(q + page(**pg), item_id)
+
+    elif request.method == 'POST':
+        if not request.user.is_authenticated:
+            raise PermissionDenied(NOT_LOGGED_IN)
+        uid = request.user.id
+
+        s = """INSERT INTO feedback (user_id, item_id, score, review, made_on)
+                VALUES (%s, %s, %s, %s, NOW())"""
+        try:
+            rq = loads(request.body)
+            values = tuple(rq[k] for k in ('item_id', 'score', 'review'))
+        except (ValueError, KeyError):
+            return None
+
+        sql(s, uid, *values)
+        return sql(q + ' AND user_id = %s', rq['item_id'], uid)[0]
 
 
 @json_response
 def rate(request):
     """Get or submit rating for feedback."""
-    # use username and bookname as input
-    q = """SELECT id FROM auth_user WHERE username = {}""".format(request.username)
-    pg = pagination(request)
-    try:
-        user_id = sql(q + page(**pg))[0][0]
-    except:
-        return None
-    q = """SELECT id FROM item WHERE name = {}""".format(request.bookname)
-    try:
-        book_id = sql(q + page(**pg))[0][0]
-    except:
-        return None
-    q = """SELECT id FROM auth_user WHERE username = {}""".format(request.ratername)
-    pg = pagination(request)
-    try:
-        rater_id = sql(q + page(**pg))[0][0]
-    except:
-        return None
-    if request.func == 'get':
-        q = """SELECT review FROM feedback WHERE user_id = {0} AND item_id = {1} AND rater_id ={2}""".format(user_id, book_id, rater_id)
+    if request.method == 'GET':
+        q = """SELECT user_id, rater_id, usefulness FROM rating
+                WHERE item_id = %s"""
+        pg = pagination(request)
+        pg['sort'].append('-usefulness')
 
-        for row in sql(q + page(**pg)):
-            yield {
-                'review': row[0]
-            }
-    else:
-        q = """INSERT INTO rating (item_id, user_id, rater_id, usefulness) VALUES ({0},{1},{2},{3})""".format(
-            book_id, user_id, rater_id, request.usefulness)
-        sql(q + page(**pg))
+        return sql(q + page(**pg))
+    elif request.method == 'POST':
+        if not request.user.is_authenticated:
+            raise PermissionDenied(NOT_LOGGED_IN)
+        uid = request.user.id
+
+        s = """INSERT INTO rating (rater_id, item_id, user_id, usefulness)
+                VALUES (%s, %s, %s, %s)"""
+        try:
+            rq = loads(request.body)
+            values = tuple(rq[k] for k in ('item_id', 'user_id', 'usefulness'))
+        except (ValueError, KeyError):
+            return None
+
+        sql(s, uid, *values)
         return None
 
 
 @json_response
 def recommends(request):
     """Get recommended items."""
-    q = """SELECT id FROM item WHERE name = {}""".format(request.bookname)
-    pg = pagination(request)
-    try:
-        book_id = sql(q + page(**pg))[0][0]
-    except:
-        return None
-    q = """SELECT review, user_name FROM (SELECT review, user_id FROM (SELECT review, AVG(usefulness) as score, user_id FROM rating WHERE item_id = {0} GROUP BY user_id) ORDER BY score LIMIT {1}), auth_user WHERE auth_user.id=user_id""".format(book_id, request.topn)
-    pg = pagination(request)
-    for row in sql(q + page(**pg)):
-        yield {
-            'review':row[0],
-            'user_name':row[1]
-        }
+    return {}
