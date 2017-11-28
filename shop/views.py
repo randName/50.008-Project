@@ -72,8 +72,8 @@ def item(request, item_id=None):
 @json_response
 def search(request):
     """Search for item."""
-    q = """SELECT id, name, score FROM item
-            INNER JOIN (SELECT item_id, AVG(score) AS score FROM feedback
+    q = """SELECT id, name, score, date_created FROM item
+            LEFT JOIN (SELECT item_id, AVG(score) AS score FROM feedback
                 GROUP BY item_id) f ON item.id = f.item_id"""
     pg = pagination(request)
 
@@ -82,6 +82,7 @@ def search(request):
             'id': row[0],
             'name': row[1],
             'score': row[2],
+            'date_created': row[3],
         }
 
 
