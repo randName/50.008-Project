@@ -1,10 +1,11 @@
 from json import loads
 
+from django.http import Http404
 from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
 
 from common.db import sql, page
-from common.utils import pagination
+from common.utils import pagination, obj
 from common.messages import NOT_LOGGED_IN
 from common.decorators import json_response
 
@@ -17,58 +18,50 @@ def index(request):
 
 
 @json_response
-def entity(request, e, e_id=None):
+def entity(request, entity, entity_id=None):
     """Get entity details."""
-    if e_id:
-        q = 'SELECT name FROM {} WHERE id = %s'.format(e)
+    if entity not in m2m + ('company',):
+        raise Http404
+
+    q = 'SELECT id, name FROM {}'.format(entity)
+
+    if entity_id:
+        q += ' WHERE id = %s'
         try:
-            return {
-                'id': e_id,
-                'name': sql(q, int(e_id))[0][0],
-            }
+            return obj(sql(q, entity_id)[0])
         except IndexError:
-            return None
+            raise Http404
 
-    q = 'SELECT id, name FROM {}'.format(e)
     pg = pagination(request)
-
-    return ({'id': i[0], 'name': i[1]} for i in sql(q + page(**pg)))
+    return (obj(e) for e in sql(q + page(**pg)))
 
 
 @json_response
 def item(request, item_id=None):
     """Get item details."""
-    if item_id:
-        q = """SELECT name, price, quantity, description, date_created, company_id
-                FROM item WHERE id = %s"""
-        try:
-            it = sql(q, item_id)[0]
-        except IndexError:
-            return None
+    keys = ('id', 'name', 'price', 'quantity', 'description', 'date_created',
+            'company.id', 'company.name')
 
-        q = """SELECT {0}.id, {0}.name FROM item_{0}
+    if item_id:
+        q = """SELECT item.id, item.name, price, quantity, description,
+                date_created, company.id, company.name FROM item
+                INNER JOIN company ON company.id = company_id
+                WHERE item.id = %s"""
+        try:
+            it = obj(sql(q, item_id)[0], keys)
+        except IndexError:
+            raise Http404
+
+        cq = """SELECT {0}.id, {0}.name FROM item_{0}
                 INNER JOIN {0} ON item_{0}.{0}_id = {0}.id
                 WHERE item_id = %s"""
-        cs = {}
         for k in m2m:
-            c = sql(q.format(k), item_id)
-            cs[k+'s'] = tuple({'id': i[0], 'name': i[1]} for i in c)
-
-        return {
-            **cs,
-            'id': item_id,
-            'name': it[0],
-            'price': it[1],
-            'quantity': it[2],
-            'description': it[3],
-            'date_created': it[4],
-            'company': entity.__wrapped__(None, 'company', it[5]),
-        }
+            it[k+'s'] = tuple(obj(i) for i in sql(cq.format(k), item_id))
+        return it
 
     q = 'SELECT id, name FROM item'
     pg = pagination(request)
-
-    return ({'id': i[0], 'name': i[1]} for i in sql(q + page(**pg)))
+    return (obj(i) for i in sql(q + page(**pg)))
 
 
 @json_response
@@ -109,16 +102,11 @@ def search(request):
         q += ' WHERE ' + ' AND '.join(fils)
 
     for row in sql(q + page(**pg), *vals):
-        yield {
-            'id': row[0],
-            'name': row[1],
-            'score': row[2],
-            'date_created': row[3],
-        }
+        yield obj(row, ('id', 'name', 'score', 'date_created'))
 
 
 @json_response
-def feedback(request):
+def feedback(request, item_id):
     """Get or submit feedback for item."""
     q = """SELECT score, review, made_on, user_id, username, item_id, name
             FROM feedback
@@ -127,9 +115,7 @@ def feedback(request):
             WHERE item_id = %s"""
 
     if request.method == 'GET':
-        item_id = request.GET.get('item_id')
         pg = pagination(request)
-
         return sql(q + page(**pg), item_id)
 
     elif request.method == 'POST':
@@ -141,16 +127,16 @@ def feedback(request):
                 VALUES (%s, %s, %s, %s, NOW())"""
         try:
             rq = loads(request.body)
-            values = tuple(rq[k] for k in ('item_id', 'score', 'review'))
+            values = tuple(rq[k] for k in ('score', 'review'))
         except (ValueError, KeyError):
             return None
 
-        sql(s, uid, *values)
-        return sql(q + ' AND user_id = %s', rq['item_id'], uid)[0]
+        sql(s, uid, item_id, *values)
+        return sql(q + ' AND user_id = %s', item_id, uid)[0]
 
 
 @json_response
-def rate(request):
+def rate(request, item_id):
     """Get or submit rating for feedback."""
     if request.method == 'GET':
         q = """SELECT user_id, rater_id, usefulness FROM rating
@@ -158,7 +144,7 @@ def rate(request):
         pg = pagination(request)
         pg['sort'].append('-usefulness')
 
-        return sql(q + page(**pg))
+        return sql(q + page(**pg), item_id)
     elif request.method == 'POST':
         if not request.user.is_authenticated:
             raise PermissionDenied(NOT_LOGGED_IN)
@@ -177,6 +163,6 @@ def rate(request):
 
 
 @json_response
-def recommends(request):
+def recommends(request, item_id):
     """Get recommended items."""
     return {}
