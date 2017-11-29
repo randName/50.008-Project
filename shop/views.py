@@ -8,6 +8,8 @@ from common.utils import pagination
 from common.messages import NOT_LOGGED_IN
 from common.decorators import json_response
 
+m2m = ('creator', 'category')
+
 
 def index(request):
     """Main page of site."""
@@ -48,7 +50,7 @@ def item(request, item_id=None):
                 INNER JOIN {0} ON item_{0}.{0}_id = {0}.id
                 WHERE item_id = %s"""
         cs = {}
-        for k in ('creator', 'category'):
+        for k in m2m:
             c = sql(q.format(k), item_id)
             cs[k+'s'] = tuple({'id': i[0], 'name': i[1]} for i in c)
 
@@ -77,7 +79,36 @@ def search(request):
                 GROUP BY item_id) f ON item.id = f.item_id"""
     pg = pagination(request)
 
-    for row in sql(q + page(**pg)):
+    i = 'id IN (SELECT id FROM item {0} WHERE {1})'
+    sq = ((' ', 'INNER JOIN item_{0} {0}{1} ON item.id = {0}{1}.item_id'),
+          (' AND ', '{0}{1}.{0}_id = %s'))
+
+    mfil = tuple(((k, i), v) for k in m2m for i, v in enumerate(
+                   v for v in request.GET.get(k, '').split(',') if v))
+    if mfil:
+        ks, vs = zip(*mfil)
+        vals = list(vs)
+        fils = [i.format(*(j.join(s.format(*k) for k in ks) for j, s in sq))]
+    else:
+        vals = []
+        fils = []
+
+    cf = request.GET.get('company')
+    try:
+        vals.append(int(cf))
+        fils.append('company_id = %s')
+    except (TypeError, ValueError):
+        pass
+
+    nf = request.GET.get('name')
+    if nf:
+        vals.append('%' + nf.lower() + '%')
+        fils.append('LOWER(name) LIKE %s')
+
+    if fils:
+        q += ' WHERE ' + ' AND '.join(fils)
+
+    for row in sql(q + page(**pg), *vals):
         yield {
             'id': row[0],
             'name': row[1],
