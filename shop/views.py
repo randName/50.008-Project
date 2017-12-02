@@ -108,17 +108,17 @@ def search(request):
 @json_response
 def feedback(request, item_id):
     """Get or submit feedback for item."""
-    q = """SELECT score, review, made_on, user_id, username, item_id, name
-            FROM feedback
-            INNER JOIN auth_user ON feedback.user_id = auth_user.id
-            INNER JOIN item ON feedback.item_id = item.id
-            WHERE item_id = %s"""
+    keys = ('score', 'review', 'made_on', 'usefulness',
+            'user.id', 'user.username')
+    q = """SELECT score, review, made_on, usefulness, f.user_id, username
+            FROM feedback f
+            INNER JOIN auth_user ON f.user_id = auth_user.id
+            LEFT JOIN (SELECT item_id, user_id, AVG(usefulness) AS usefulness
+                FROM rating GROUP BY item_id, user_id) r
+                ON f.item_id = r.item_id AND f.user_id = r.user_id
+            WHERE f.item_id = %s"""
 
-    if request.method == 'GET':
-        pg = pagination(request)
-        return sql(q + page(**pg), item_id)
-
-    elif request.method == 'POST':
+    if request.method == 'POST':
         if not request.user.is_authenticated:
             raise PermissionDenied(NOT_LOGGED_IN)
         uid = request.user.id
@@ -127,25 +127,24 @@ def feedback(request, item_id):
                 VALUES (%s, %s, %s, %s, NOW())"""
         try:
             rq = loads(request.body)
-            values = tuple(rq[k] for k in ('score', 'review'))
+            sql(s, uid, item_id, int(rq['score']), rq['review'])
+            return obj(sql(q + ' AND user_id = %s', item_id, uid)[0], keys)
         except (ValueError, KeyError):
             return None
 
-        sql(s, uid, item_id, *values)
-        return sql(q + ' AND user_id = %s', item_id, uid)[0]
+    pg = pagination(request)
+    pg['sort'].append('-usefulness')
+    return (obj(i, keys) for i in sql(q + page(**pg), item_id))
 
 
 @json_response
-def rate(request, item_id):
+def rate(request, item_id, user_id):
     """Get or submit rating for feedback."""
-    if request.method == 'GET':
-        q = """SELECT user_id, rater_id, usefulness FROM rating
-                WHERE item_id = %s"""
-        pg = pagination(request)
-        pg['sort'].append('-usefulness')
+    q = """SELECT u FROM (SELECT item_id, user_id, AVG(usefulness) AS u
+            FROM rating GROUP BY item_id, user_id) r
+            WHERE item_id = %s AND user_id = %s"""
 
-        return sql(q + page(**pg), item_id)
-    elif request.method == 'POST':
+    if request.method == 'POST':
         if not request.user.is_authenticated:
             raise PermissionDenied(NOT_LOGGED_IN)
         uid = request.user.id
@@ -154,12 +153,13 @@ def rate(request, item_id):
                 VALUES (%s, %s, %s, %s)"""
         try:
             rq = loads(request.body)
-            values = tuple(rq[k] for k in ('item_id', 'user_id', 'usefulness'))
+            sql(s, uid, item_id, user_id, int(rq['usefulness']))
         except (ValueError, KeyError):
-            return None
-
-        sql(s, uid, *values)
-        return None
+            pass
+    try:
+        return sql(q, item_id, user_id)[0][0]
+    except IndexError:
+        raise Http404
 
 
 @json_response
