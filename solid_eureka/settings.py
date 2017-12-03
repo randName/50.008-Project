@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'orders.apps.OrdersConfig',
     'users.apps.UsersConfig',
     'shop.apps.ShopConfig',
+    'webpack_loader',
 ]
 
 MIDDLEWARE = [
@@ -134,7 +135,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    'common/static',
+    os.path.join(BASE_DIR, 'assets'),
 ]
 
 
@@ -145,3 +146,9 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'index'
 
 LOGOUT_REDIRECT_URL = 'index'
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'build/',
+    },
+}
