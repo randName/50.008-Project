@@ -1,5 +1,8 @@
 def pagination(request, defaults=(1, 20)):
     """Get pagination parameters from request."""
+    if request is None:
+        return {'sort': []}
+
     p = {}
 
     try:

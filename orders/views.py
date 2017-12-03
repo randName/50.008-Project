@@ -1,7 +1,9 @@
+from django.http import Http404
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.http import require_POST
 
 from common.db import sql
+from common.utils import obj
 from common.decorators import json_response
 from common.messages import NOT_LOGGED_IN, WRONG_ACCOUNT
 
@@ -25,27 +27,21 @@ def order(request, order_id=None, details=None):
         try:
             uid, made_on, total = sql(q, order_id)[0]
         except IndexError:
-            return None
+            return Http404
 
         if uid != request.user.id:
             raise PermissionDenied(WRONG_ACCOUNT)
     else:
         order_id, made_on, total = details
 
-    q = """SELECT item_id, name, p.quantity
-            FROM purchase_item p INNER JOIN item
-            ON p.item_id = item.id
+    keys = ('id', 'name', 'quantity')
+    q = """SELECT item_id, name, p.quantity FROM purchase_item p
+            INNER JOIN item ON p.item_id = item.id
             WHERE purchase_id = %s"""
-
-    items = tuple({
-        'id': iid,
-        'name': name,
-        'quantity': qty,
-    } for iid, name, qty in sql(q, order_id))
 
     return {
         'id': order_id,
         'total': total,
-        'items': items,
         'made_on': made_on,
+        'items': tuple(obj(i, keys) for i in sql(q, order_id)),
     }
