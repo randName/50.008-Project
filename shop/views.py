@@ -165,4 +165,16 @@ def rate(request, item_id, user_id):
 @json_response
 def recommends(request, item_id):
     """Get recommended items."""
-    return {}
+    keys = ('id', 'name', 'users', 'sales')
+    q = """SELECT item.id, name, COUNT(DISTINCT p1.user_id) AS users,
+                SUM(i1.quantity) AS sales FROM item
+            INNER JOIN purchase_item i1 ON i1.item_id = id
+            INNER JOIN purchase p1 ON i1.purchase_id = p1.id
+            INNER JOIN purchase p2 ON p1.user_id = p2.user_id
+            INNER JOIN purchase_item i2 ON i2.purchase_id = p2.id
+                AND i1.item_id <> i2.item_id AND i2.item_id = %s
+            GROUP BY item.id
+            """
+    pg = pagination(request)
+    pg['sort'].append('-sales')
+    return (obj(i, keys) for i in sql(q + page(**pg), item_id))
