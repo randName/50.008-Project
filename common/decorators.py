@@ -2,6 +2,7 @@ from functools import wraps
 
 from django.db import DatabaseError
 from django.http import JsonResponse
+from django.forms import ValidationError
 from django.core.exceptions import PermissionDenied
 
 
@@ -30,6 +31,11 @@ def json_response(func):
                 'code': e.args[0],
                 'error': type(e).__name__,
                 'detail': ' '.join(e.args[1:]),
+            }
+        except ValidationError as e:
+            data = {
+                'error': 'ValidationError',
+                'messages': e.messages
             }
 
         if isinstance(data, JsonResponse):

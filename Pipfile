@@ -10,6 +10,7 @@ name = "pypi"
 django = "*"
 mysqlclient = "*"
 gunicorn = "*"
+django-webpack-loader = "*"
 
 
 [dev-packages]

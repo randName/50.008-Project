@@ -5,6 +5,11 @@
 # Django stuff
 *.log
 
+# npm stuff
+node_modules/
+assets/build/
+webpack-stats.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

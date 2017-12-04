@@ -16,6 +16,10 @@ Development of database-based system in Django
     vi .env
     pipenv run ./db.sh init
 
+    # webpack
+    npm install
+    npm build
+
 # Features
 
 ## Registration
