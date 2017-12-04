@@ -73,7 +73,7 @@ export default {
         {
           title: 'Logout',
           action: 'exit_to_app',
-          click: () => this.$user.logout()
+          click: () => this.$user.logout().then(() => this.$router.push('/'))
         }
       ]
       if (this.user.is_staff) {

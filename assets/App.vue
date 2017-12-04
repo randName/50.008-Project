@@ -2,7 +2,7 @@
 <v-app dark>
   <NavBar/>
   <v-content>
-    <v-container fluid>
+    <v-container fluid grid-list-lg>
       <v-slide-x-transition mode="out-in">
         <router-view></router-view>
       </v-slide-x-transition>

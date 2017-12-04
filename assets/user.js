@@ -13,6 +13,13 @@ export const UserManager = new Vue({
         get () {
             return axios.get('/user/details').then(this.update)
         },
+        getdetails () {
+            let details = ['orders', 'ratings', 'feedbacks']
+            return axios.all(details.map(
+                d => axios.get('/user/' + d)
+                     .then(r => this.profile[d] = r.data.data)
+            ))
+        },
         login (form, register) {
             if ( register ) {
                 form = {
@@ -34,6 +41,11 @@ export const UserManager = new Vue({
     },
     data () {
         return {
+            profile: {
+                orders: [],
+                ratings: [],
+                feedbacks: []
+            },
             user: {}
         }
     }
