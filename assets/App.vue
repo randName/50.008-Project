@@ -1,6 +1,6 @@
 <template>
 <v-app dark>
-  <NavBar :user="user"/>
+  <NavBar/>
   <v-content>
     <v-container fluid>
       <v-slide-x-transition mode="out-in">
@@ -17,10 +17,12 @@ import NavBar from './components/Nav.vue'
 export default {
   data () {
     return {
-      user: {
-        is_authenticated: false
-      }
     }
+  },
+  methods: {
+  },
+  created () {
+    this.$user.get()
   },
   components: {
     NavBar

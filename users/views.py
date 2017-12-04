@@ -1,8 +1,9 @@
+from django.forms import ValidationError
 from django.shortcuts import render, redirect
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 from orders.views import order
 from common.db import sql, page
@@ -25,6 +26,31 @@ def registration(request):
     else:
         form = UserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
+
+
+@json_response
+def alogin(request):
+    """AJAX login/registration."""
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
+        if not form.is_valid():
+            errors = [' '.join(v) for v in form.errors.values()]
+            raise ValidationError(errors)
+
+        username = form.cleaned_data.get('username')
+        password = form.cleaned_data.get('password')
+        user = authenticate(username=username, password=password)
+        login(request, user)
+
+    return details(request)
+
+
+@json_response
+def details(request):
+    """Get user details."""
+    keys = ('is_authenticated', 'is_staff', 'date_joined',
+            'username', 'email', 'first_name', 'last_name')
+    return {k: getattr(request.user, k, None) for k in keys}
 
 
 @login_required

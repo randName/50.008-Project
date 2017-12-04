@@ -9,14 +9,23 @@ Vue.prototype.$http = axios.create({
     xsrfHeaderName: 'X-CSRFToken'
 })
 
+import {UserManager} from './user'
+Vue.prototype.$user = UserManager
+
 import App from './App.vue'
-import Shop from './components/Shop.vue'
-import Cart from './components/Cart.vue'
+import Shop from './routes/Shop.vue'
+import Cart from './routes/Cart.vue'
+import User from './routes/User.vue'
+import Login from './routes/Login.vue'
+import Manager from './routes/Manager.vue'
 
 export const routes = [
-  { path: '/shop', name: 'Shop', component: Shop },
-  { path: '/cart', name: 'Cart', component: Cart },
-  { path: '*', redirect: '/shop' }
+    { path: '/shop', name: 'Shop', component: Shop },
+    { path: '/cart', name: 'Cart', component: Cart },
+    { path: '/user', name: 'Profile', component: User },
+    { path: '/login', name: 'Login', component: Login },
+    { path: '/manager', name: 'Manager', component: Manager },
+    { path: '*', redirect: '/shop' }
 ]
 const router = new VueRouter({routes})
 
