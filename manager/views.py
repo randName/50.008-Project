@@ -4,20 +4,11 @@ from django.http import Http404
 from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.http import require_POST
-from django.contrib.auth.decorators import login_required
 
 from common.db import sql, page
 from common.utils import pagination
 from common.messages import NOT_STAFF
 from common.decorators import json_response
-
-
-@login_required
-def admin(request):
-    """Show main admin page."""
-    if not request.user.is_staff:
-        return render(request, 'manager/denied.html')
-    return render(request, 'manager/index.html')
 
 
 @require_POST

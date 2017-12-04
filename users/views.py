@@ -2,7 +2,6 @@ from django.forms import ValidationError
 from django.shortcuts import render, redirect
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 from orders.views import order
@@ -39,6 +38,7 @@ def alogin(request):
 
         username = form.cleaned_data.get('username')
         password = form.cleaned_data.get('password')
+
         user = authenticate(username=username, password=password)
         login(request, user)
 
@@ -51,12 +51,6 @@ def details(request):
     keys = ('is_authenticated', 'is_staff', 'date_joined',
             'username', 'email', 'first_name', 'last_name')
     return {k: getattr(request.user, k, None) for k in keys}
-
-
-@login_required
-def profile(request):
-    """Show profile of logged-in user."""
-    return render(request, 'users/profile.html')
 
 
 @json_response

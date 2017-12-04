@@ -21,6 +21,5 @@ urlpatterns = [
     url(r'^user/', include('users.urls')),
     url(r'^order/', include('orders.urls')),
     url(r'^admin/', include('manager.urls')),
-    url(r'^login/$', auth_views.login, name='login'),
     url(r'^logout/$', auth_views.logout, name='logout'),
 ]
