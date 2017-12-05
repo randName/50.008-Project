@@ -3,12 +3,13 @@
   <v-toolbar app fixed clipped-left>
     <v-toolbar-side-icon @click.stop="drawer=!drawer"></v-toolbar-side-icon>
     <v-toolbar-title>Solid Eureka</v-toolbar-title>
-    <template v-if="$route.name == 'Shop'">
     <v-spacer></v-spacer>
-    <v-btn icon>
+    <v-btn v-if="$route.name == 'Shop'" icon>
       <v-icon>search</v-icon>
     </v-btn>
-    </template>
+    <v-btn v-else icon @click="$router.go(-1)">
+      <v-icon>arrow_back</v-icon>
+    </v-btn>
   </v-toolbar>
   <v-navigation-drawer clipped fixed app v-model="drawer">
     <v-list dense>
@@ -52,6 +53,14 @@
           <v-list-tile-title>{{ i.route }}</v-list-tile-title>
         </v-list-tile-content>
       </v-list-tile>
+      <v-list-tile>
+        <v-list-tile-action>
+          <v-icon style="transform: rotate(45deg)">brightness_2</v-icon>
+        </v-list-tile-action>
+        <v-list-tile-content>
+          <v-switch label="Dark Mode" v-model="dark"></v-switch>
+        </v-list-tile-content>
+      </v-list-tile>
     </v-list>
   </v-navigation-drawer>
 </div>
@@ -86,8 +95,14 @@ export default {
       return actions;
     }
   },
+  watch: {
+    dark () {
+      this.$emit('dark')
+    }
+  },
   data () {
     return {
+      dark: true,
       drawer: false,
       userdrop: false,
       links: [
