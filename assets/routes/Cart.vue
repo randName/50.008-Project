@@ -1,7 +1,7 @@
 <template>
-<div>
+<v-container>
   <h1>Cart</h1>
-</div>
+</v-container>
 </template>
 
 <script>

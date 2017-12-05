@@ -1,5 +1,5 @@
 <template>
-<div>
+<v-container fluid grid-list-lg>
   <v-layout row wrap>
     <v-flex xs12>
       <v-card>
@@ -123,7 +123,7 @@
       </v-card>
     </v-flex>
   </v-layout>
-</div>
+</v-container>
 </template>
 
 <script>
@@ -140,27 +140,28 @@ export default {
     this.$user.getdetails()
   },
   data () {
+    let user = this.$user.user
     return {
       info: [
         {
           editable: true,
           label: 'First Name',
-          value: this.$user.user.first_name
+          value: user.first_name
         },
         {
           editable: true,
           label: 'Last Name',
-          value: this.$user.user.last_name
+          value: user.last_name
         },
         {
           editable: true,
           label: 'Email',
-          value: this.$user.user.email
+          value: user.email
         },
         {
           editable: false,
           label: 'Joined',
-          value: this.$user.user.date_joined
+          value: user.date_joined
         }
       ]
     }
