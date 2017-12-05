@@ -20,9 +20,11 @@ Vue.prototype.$user = UserManager
 // Routes
 import App from './App.vue'
 import Shop from './routes/Shop.vue'
+import Item from './routes/Item.vue'
 import Cart from './routes/Cart.vue'
 import User from './routes/User.vue'
 import Login from './routes/Login.vue'
+import Search from './routes/Search.vue'
 import Manager from './routes/Manager.vue'
 
 export const routes = [
@@ -30,6 +32,8 @@ export const routes = [
     { path: '/cart', name: 'Cart', component: Cart },
     { path: '/user', name: 'Profile', component: User },
     { path: '/login', name: 'Login', component: Login },
+    { path: '/item/:id', name: 'Item', component: Item },
+    { path: '/search', name: 'Search', component: Search },
     { path: '/manager', name: 'Manager', component: Manager },
     { path: '*', redirect: '/shop' }
 ]
