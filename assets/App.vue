@@ -2,11 +2,9 @@
 <v-app dark>
   <NavBar/>
   <v-content>
-    <v-container fluid grid-list-lg>
-      <v-slide-x-transition mode="out-in">
-        <router-view></router-view>
-      </v-slide-x-transition>
-    </v-container>
+    <v-fade-transition mode="out-in">
+      <router-view></router-view>
+    </v-fade-transition>
   </v-content>
 </v-app>
 </template>

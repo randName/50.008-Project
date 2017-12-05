@@ -1,5 +1,5 @@
 <template>
-<div>
+<v-container fluid>
   <v-alert v-for="e in errors" :key="e" type="error" value="true">
     {{ e }}
   </v-alert>
@@ -27,7 +27,7 @@
     <v-btn @click="login" :disabled="!valid">{{ actiontext }}</v-btn>
     <v-btn @click="register=!register">{{ switchtext }}</v-btn>
   </v-form>
-</div>
+</v-container>
 </template>
 
 <script>
