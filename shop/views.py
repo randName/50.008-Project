@@ -20,15 +20,26 @@ def index(request):
 @json_response
 def entity(request):
     """Get entity details."""
+    etypes = ('company',) + m2m
     nq = request.GET.get('q')
     if not nq:
-        return None
+        try:
+            etype = request.GET.get('type')
+            eid = int(request.GET.get('id', ''))
+        except ValueError:
+            return None
+
+        if etype not in etypes:
+            return None
+
+        q = 'SELECT id, name FROM {} WHERE id = %s'.format(etype)
+        return obj(sql(q, eid)[0])
 
     q = 'SELECT id, name FROM {} WHERE LOWER(name) LIKE %s LIMIT 3'
     nq = '%' + nq.lower() + '%'
 
     results = []
-    for e in ('company',) + m2m:
+    for e in etypes:
         results.extend({'type': e, **obj(i)} for i in sql(q.format(e), nq))
     return results
 
