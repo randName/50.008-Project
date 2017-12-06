@@ -18,22 +18,30 @@ def index(request):
 
 
 @json_response
-def entity(request, entity, entity_id=None):
+def entity(request):
     """Get entity details."""
-    if entity not in m2m + ('company',):
-        raise Http404
-
-    q = 'SELECT id, name FROM {}'.format(entity)
-
-    if entity_id:
-        q += ' WHERE id = %s'
+    etypes = ('company',) + m2m
+    nq = request.GET.get('q')
+    if not nq:
         try:
-            return obj(sql(q, entity_id)[0])
-        except IndexError:
-            raise Http404
+            etype = request.GET.get('type')
+            eid = int(request.GET.get('id', ''))
+        except ValueError:
+            return None
 
-    pg = pagination(request)
-    return (obj(e) for e in sql(q + page(**pg)))
+        if etype not in etypes:
+            return None
+
+        q = 'SELECT id, name FROM {} WHERE id = %s'.format(etype)
+        return obj(sql(q, eid)[0])
+
+    q = 'SELECT id, name FROM {} WHERE LOWER(name) LIKE %s LIMIT 3'
+    nq = '%' + nq.lower() + '%'
+
+    results = []
+    for e in etypes:
+        results.extend({'type': e, **obj(i)} for i in sql(q.format(e), nq))
+    return results
 
 
 @json_response

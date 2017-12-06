@@ -1,16 +1,17 @@
 <template>
 <div>
-  <v-toolbar app fixed clipped-left>
+  <v-toolbar app fixed>
     <v-toolbar-side-icon @click.stop="drawer=!drawer"></v-toolbar-side-icon>
-    <v-toolbar-title>Solid Eureka</v-toolbar-title>
-    <v-spacer></v-spacer>
-    <v-btn v-if="$route.name == 'Shop'" icon>
+    <v-btn v-if="$route.name=='Shop'" icon large @click="searching=true">
       <v-icon>search</v-icon>
     </v-btn>
     <v-btn v-else icon @click="$router.go(-1)">
       <v-icon>arrow_back</v-icon>
     </v-btn>
+    <v-spacer></v-spacer>
+    <v-toolbar-title>Solid Eureka</v-toolbar-title>
   </v-toolbar>
+  <SearchBar :searching="searching" @nosearch="searching=false"/>
   <v-navigation-drawer clipped fixed app v-model="drawer">
     <v-list dense>
       <v-slide-x-transition>
@@ -67,6 +68,8 @@
 </template>
 
 <script>
+import SearchBar from './SearchBar.vue'
+
 export default {
   computed: {
     user () {
@@ -100,11 +103,15 @@ export default {
       this.$emit('dark')
     }
   },
+  components: {
+    SearchBar
+  },
   data () {
     return {
       dark: true,
       drawer: false,
       userdrop: false,
+      searching: false,
       links: [
         { route: 'Shop', action: 'store' },
         { route: 'Cart', action: 'shopping_cart' }
