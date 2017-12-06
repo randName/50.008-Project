@@ -8,9 +8,14 @@
     placeholder="Search" prepend-icon="search" @keyup.enter="dosearch"
   ></v-text-field>
   <v-menu offset-y v-model="showsearch" activator="#search">
-    <v-list light>
+    <v-list light dense>
       <v-list-tile v-for="i in suggestions" :key="i.type+i.id" @click="dosearch(i)">
-        <v-list-tile-title>{{ i.name }}</v-list-tile-title>
+        <v-list-tile-avatar>
+          <v-icon color="black">{{ icons[i.type] }}</v-icon>
+        </v-list-tile-avatar>
+        <v-list-tile-content>
+          <v-list-tile-title>{{ i.name }}</v-list-tile-title>
+        </v-list-tile-content>
       </v-list-tile>
     </v-list>
   </v-menu>
@@ -43,8 +48,12 @@ export default {
       }
     },
     search (val) {
-      if (val && val.length > 3) {
-        console.log(val)
+      if (val && val.length >= 3) {
+        const params = {q: val}
+        this.$nextTick(() => this.$http.get('/entities', {params})
+          .then(r => this.suggestions = r.data.data))
+      } else {
+        this.$nextTick(() => this.suggestions = [])
       }
     },
   },
@@ -67,6 +76,11 @@ export default {
   },
   data () {
     return {
+      icons: {
+        creator: 'face',
+        category: 'label',
+        company: 'business'
+      },
       search: null,
       suggestions: [],
     }
