@@ -6,7 +6,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 from orders.views import order
 from common.db import sql, page
-from common.utils import pagination
+from common.utils import pagination, obj
 from common.messages import NOT_LOGGED_IN
 from common.decorators import json_response
 
@@ -48,7 +48,7 @@ def alogin(request):
 @json_response
 def details(request):
     """Get user details."""
-    keys = ('is_authenticated', 'is_staff', 'date_joined',
+    keys = ('id', 'is_authenticated', 'is_staff', 'date_joined',
             'username', 'email', 'first_name', 'last_name')
     return {k: getattr(request.user, k, None) for k in keys}
 
@@ -71,7 +71,7 @@ def feedbacks(request):
     """Get feedback made by logged-in user."""
     if not request.user.is_authenticated:
         raise PermissionDenied(NOT_LOGGED_IN)
-
+    keys = ('item.id', 'item.name', 'score', 'review', 'made_on')
     q = """SELECT item_id, name, score, review, made_on
             FROM feedback INNER JOIN item
             ON item.id = feedback.item_id
@@ -80,15 +80,7 @@ def feedbacks(request):
     pg = pagination(request)
 
     for row in sql(q + page(**pg), request.user.id):
-        yield {
-            'item': {
-                'id': row[0],
-                'name': row[1],
-            },
-            'score': row[2],
-            'review': row[3],
-            'made_on': row[4],
-        }
+        yield obj(row, keys)
 
 
 @json_response
@@ -96,8 +88,10 @@ def ratings(request):
     """Get feedback rated by logged-in user."""
     if not request.user.is_authenticated:
         raise PermissionDenied(NOT_LOGGED_IN)
-
-    q = """SELECT i.id, i.name, u.id, u.username, score, made_on, usefulness
+    keys = ('item.id', 'item.name', 'user.id', 'user.username',
+            'score', 'review', 'made_on', 'usefulness')
+    q = """SELECT i.id, i.name, u.id, u.username,
+            score, review, made_on, usefulness
             FROM rating r INNER JOIN feedback f
             ON r.item_id = f.item_id AND r.user_id = f.user_id
             INNER JOIN auth_user u ON r.user_id = u.id
@@ -108,16 +102,4 @@ def ratings(request):
     pg['sort'].append('-usefulness')
 
     for row in sql(q + page(**pg), request.user.id):
-        yield {
-            'item': {
-                'id': row[0],
-                'name': row[1],
-            },
-            'user': {
-                'id': row[2],
-                'username': row[3],
-            },
-            'score': row[4],
-            'made_on': row[5],
-            'usefulness': row[6],
-        }
+        yield obj(row, keys)
