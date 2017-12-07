@@ -1,6 +1,6 @@
 <template>
 <v-container fluid grid-list-lg>
-  <v-layout row wrap>
+  <v-layout v-if="item.id" row wrap>
     <v-flex xs12>
       <v-card>
         <v-card-title primary-title>
@@ -66,6 +66,7 @@
       </v-card>
     </v-dialog>
   </v-layout>
+  <v-progress-linear v-else :indeterminate="true"></v-progress-linear>
 </v-container>
 </template>
 
@@ -95,14 +96,7 @@ export default {
     return {
       dialog: false,
       item: {
-        id: null,
-        name: null,
-        price: null,
-        creators: [],
-        categorys: [],
-        quantity: null,
-        date_created: null,
-        company: {id: null, name: null}
+        id: null
       }
     }
   }

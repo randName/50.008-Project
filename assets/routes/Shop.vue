@@ -1,29 +1,31 @@
 <template>
 <v-container fluid grid-list-sm>
   <v-layout row wrap>
-    <ShopItem v-for="i in p.view" :key="i.id" :id="i.id" :name="i.name"/>
+    <v-flex xs12>
+      <v-card>
+        <v-card-title primary-title>
+          <div>
+            <div class="headline">Welcome to Solid Eureka!</div>
+            <span class="grey--text">The generic item store</span>
+          </div>
+        </v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn :to="{name: 'Search'}">Search the store</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-flex>
   </v-layout>
-  <div class="text-xs-center">
-    <v-pagination :length="p.pages" v-model="p.page"></v-pagination>
-  </div>
 </v-container>
 </template>
 
 <script>
-import ShopItem from '../components/ShopItem.vue'
-
-import {Paginator} from '../pager'
-Paginator.url = '/items'
-Paginator.fill = {id: null, name: null}
-
 export default {
   data () {
     return {
-      p: Paginator
     }
   },
   components: {
-    ShopItem
   }
 }
 </script>

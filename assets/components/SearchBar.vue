@@ -8,10 +8,10 @@
     placeholder="Search" prepend-icon="search" @keyup.enter="dosearch"
   ></v-text-field>
   <v-menu offset-y v-model="showsearch" activator="#search">
-    <v-list light dense>
+    <v-list dense>
       <v-list-tile v-for="i in suggestions" :key="i.type+i.id" @click="dosearch(i)">
         <v-list-tile-avatar>
-          <v-icon color="black">{{ icons[i.type] }}</v-icon>
+          <v-icon>{{ icons[i.type] }}</v-icon>
         </v-list-tile-avatar>
         <v-list-tile-content>
           <v-list-tile-title>{{ i.name }}</v-list-tile-title>

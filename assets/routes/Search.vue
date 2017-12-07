@@ -27,14 +27,33 @@
     label="Search Names"
     @keyup.enter="dosearch"
   ></v-text-field>
+  <v-select label="Sort" :items="sorts" v-model="sort"></v-select>
+  <template v-if="p.view.length > 0">
+  <div class="text-xs-center">
+    <v-pagination
+      :total-visible="p.visible"
+      :length="p.pages"
+      v-model="p.page"
+    ></v-pagination>
+  </div>
   <v-layout row wrap>
-    <SearchItem v-for="i in results" :key="i.id" :id="i.id" :name="i.name"/>
+    <SearchItem v-for="i in p.view" v-if="i.id" :key="i.id" :item="i"/>
   </v-layout>
+  <div class="text-xs-center">
+    <v-pagination
+      :total-visible="p.visible"
+      :length="p.pages"
+      v-model="p.page"
+    ></v-pagination>
+  </div>
+  </template>
 </v-container>
 </template>
 
 <script>
 import SearchItem from '../components/SearchItem.vue'
+
+import {Paginator} from '../pager'
 
 export default {
   watch: {
@@ -48,6 +67,9 @@ export default {
             this.loading = false
           }))
       }
+    },
+    sort (val) {
+      this.dosearch()
     },
     select (val) {
       const q = {
@@ -80,9 +102,10 @@ export default {
     dosearch () {
       let params = this.se
       params.name = this.namesearch
-      if (Object.keys(params).every(i => !params[i])) return
-      this.$nextTick(() => this.$http.get('/search', {params})
-        .then(r => this.results = r.data.data))
+      const sort = this.sort ? [this.sort] : null
+      this.p.set('/search', params, sort)
+      const query = Object.assign({}, this.se, {sort, q: this.namesearch})
+      this.$router.push({query})
     },
     make (t, e) {
       e.type = t
@@ -92,6 +115,9 @@ export default {
     }
   },
   mounted () {
+    if (this.$route.query.sort){
+      this.sort = this.$route.query.sort
+    }
     if (this.$route.query.q) {
       this.namesearch = this.$route.query.q
     }
@@ -109,9 +135,16 @@ export default {
   data () {
     return {
       se: {},
+      sorts: [
+        { text: 'Score', value: '-score' },
+        { text: 'Year (Latest first)', value: '-date_created' },
+        { text: 'Year (Earliest first)', value: 'date_created' }
+      ],
+      sort: '-date_created',
       items: [],
       select: [],
-      results: [],
+      state: null,
+      p: Paginator,
       ensearch: null,
       loading: false,
       namesearch: null
