@@ -13,7 +13,7 @@
   </v-toolbar>
   <SearchBar :searching="searching" @nosearch="searching=false"/>
   <v-navigation-drawer clipped fixed app v-model="drawer">
-    <v-list dense>
+    <v-list>
       <v-slide-x-transition>
         <v-list-group v-if="user.is_authenticated" :value="userdrop">
           <v-list-tile slot="item">
@@ -56,10 +56,10 @@
       </v-list-tile>
       <v-list-tile>
         <v-list-tile-action>
-          <v-icon style="transform: rotate(45deg)">brightness_2</v-icon>
+          <v-icon style="transform: rotate(135deg)">brightness_2</v-icon>
         </v-list-tile-action>
         <v-list-tile-content>
-          <v-switch label="Dark Mode" v-model="dark"></v-switch>
+          <v-switch hide-details label="Dark Mode" v-model="dark"></v-switch>
         </v-list-tile-content>
       </v-list-tile>
     </v-list>
