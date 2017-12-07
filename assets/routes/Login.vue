@@ -39,7 +39,7 @@ export default {
     login () {
       if (this.$refs.form.validate()) {
         this.$user.login(this.form, this.register)
-        .then(() => this.$router.push('/'))
+        .then(() => this.$router.go(-1))
         .catch(e => this.errors = e.response.data.messages)
       }
     },

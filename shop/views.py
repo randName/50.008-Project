@@ -3,6 +3,7 @@ from json import loads
 from django.http import Http404
 from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
+from django.views.decorators.csrf import requires_csrf_token
 
 from common.db import sql, count, page
 from common.utils import pagination, obj
@@ -12,6 +13,7 @@ from common.decorators import json_response
 m2m = ('creator', 'category')
 
 
+@requires_csrf_token
 def index(request):
     """Main page of site."""
     return render(request, 'shop/index.html')
@@ -142,7 +144,6 @@ def feedback(request, item_id):
         try:
             rq = loads(request.body)
             sql(s, uid, item_id, int(rq['score']), rq['review'])
-            return obj(sql(q + ' AND user_id = %s', item_id, uid)[0], keys)
         except (ValueError, KeyError):
             return None
 
