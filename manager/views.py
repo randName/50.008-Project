@@ -1,13 +1,12 @@
 from json import loads
 
 from django.http import Http404
-from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.http import require_POST
 
 from common.db import sql, page
-from common.utils import pagination
 from common.messages import NOT_STAFF
+from common.utils import pagination, obj
 from common.decorators import json_response
 
 
@@ -55,15 +54,9 @@ def stock(request, item_id):
         sql(s, *values, item_id)
 
     try:
-        r = sql(q, item_id)[0]
+        return obj(sql(q, item_id)[0], ('id', 'price', 'quantity'))
     except IndexError:
         raise Http404
-
-    return {
-        'id': r[0],
-        'price': r[1],
-        'quantity': r[2],
-    }
 
 
 @json_response
@@ -75,11 +68,23 @@ def stats(request, entity, year, month):
     if entity not in ('item', 'company', 'creator'):
         raise Http404
 
-    q = """SELECT item_id, SUM(quantity) AS total FROM purchase_item
+    keys = ('%s.id' % entity, '%s.name' % entity, 'total')
+    sqs = {
+        'item': ('', 'item.id'),
+        'company': ('INNER JOIN item ON company.id = item.company_id',
+                    'item.id'),
+        'creator': (
+            'INNER JOIN item_creator ON creator.id = item_creator.creator_id',
+            'item_creator.item_id'
+        )
+    }
+    q = """SELECT {0}.id, {0}.name, SUM(purchase_item.quantity) AS total
+            FROM {0} {1}
+            INNER JOIN purchase_item ON purchase_item.item_id = {2}
             INNER JOIN purchase p ON p.id = purchase_item.purchase_id
             WHERE YEAR(p.made_on) = %s AND MONTH(p.made_on) = %s
-            GROUP BY item_id"""
+            GROUP BY {0}.id""".format(entity, *sqs[entity])
+
     pg = pagination(request)
     pg['sort'].append('-total')
-
-    return sql(q + page(**pg), year, month)
+    return (obj(i, keys) for i in sql(q + page(**pg), year, month))
