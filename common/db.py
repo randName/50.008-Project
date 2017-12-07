@@ -8,6 +8,11 @@ def sql(query, *params):
         return cur.fetchall()
 
 
+def count(query, *params):
+    q = 'SELECT COUNT(*) FROM ({}) q'.format(query)
+    return int(sql(q, *params)[0][0])
+
+
 def page(page=1, per_page=20, sort=None):
     """Translate pagination parameters to SQL."""
     def des(s): return "%s DESC" % s[1:] if s[0] == '-' else s

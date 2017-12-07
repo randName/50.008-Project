@@ -4,7 +4,7 @@ from django.http import Http404
 from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
 
-from common.db import sql, page
+from common.db import sql, count, page
 from common.utils import pagination, obj
 from common.messages import NOT_LOGGED_IN
 from common.decorators import json_response
@@ -69,12 +69,16 @@ def item(request, item_id=None):
 
     q = 'SELECT id, name FROM item'
     pg = pagination(request)
-    return (obj(i) for i in sql(q + page(**pg)))
+    return {
+        'meta': {'total': count(q)},
+        'data': tuple(obj(i) for i in sql(q + page(**pg))),
+    }
 
 
 @json_response
 def search(request):
     """Search for item."""
+    keys = ('id', 'name', 'score', 'date_created')
     q = """SELECT id, name, score, date_created FROM item
             LEFT JOIN (SELECT item_id, AVG(score) AS score FROM feedback
                 GROUP BY item_id) f ON item.id = f.item_id"""
@@ -109,8 +113,10 @@ def search(request):
     if fils:
         q += ' WHERE ' + ' AND '.join(fils)
 
-    for row in sql(q + page(**pg), *vals):
-        yield obj(row, ('id', 'name', 'score', 'date_created'))
+    return {
+        'meta': {'total': count(q, *vals)},
+        'data': tuple(obj(i, keys) for i in sql(q + page(**pg), *vals)),
+    }
 
 
 @json_response
