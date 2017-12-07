@@ -37,7 +37,12 @@ export const routes = [
     { path: '/manager', name: 'Manager', component: Manager },
     { path: '*', redirect: '/shop' }
 ]
-const router = new VueRouter({routes})
+const router = new VueRouter({
+    routes,
+    scrollBehavior (to, from, savedPosition) {
+        return { x: 0, y: 0 }
+    }
+})
 
 // Filters
 Vue.filter('joins', (a, prop='name', sep='; ') => a.map(i => i[prop]).join(sep));
