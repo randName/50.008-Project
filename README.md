@@ -68,13 +68,13 @@ This project is licensed under the Apache License - see the [LICENSE.md](misc/LI
 
 ## Authors
 
-* [Shun Git](@randname)
-* [Guo Yuan Jing](@guoyuanjing2988)
+* [Shun Git](https://github.com/randName)
+* [Guo Yuan Jing](https://github.com/guoyuanjing2988)
 * Jiang Tao
 * Wang Shuo
 * Lee Yue Ning
-* [Ong Wei Jie Joel](@joelowj)
+* [Ong Wei Jie Joel](https://github.com/joelowj)
 
 ## Acknowledgments
 * Dorien Herremans, our course instructor.
-* [Jon Wong](@jon-wong-sutd) guidance on Agile software development and inspiration to adopt a design thinking approach to Software Development for this project.
+* [Jon Wong](https://github.com/jon-wong-sutd) guidance on Agile software development and inspiration to adopt a design thinking approach to Software Development for this project.
