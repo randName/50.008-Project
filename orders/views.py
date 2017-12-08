@@ -1,3 +1,5 @@
+from json import loads
+
 from django.http import Http404
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.http import require_POST
@@ -6,6 +8,22 @@ from common.db import sql
 from common.utils import obj
 from common.decorators import json_response
 from common.messages import NOT_LOGGED_IN, WRONG_ACCOUNT
+
+
+@json_response
+def cart(request):
+    """Get or update session cart."""
+    ses_cart = request.session.get('cart', {})
+
+    if request.method == 'POST':
+        try:
+            rq = loads(request.body)
+            ses_cart[rq['item_id']] = int(rq['quantity'])
+            request.session['cart'] = ses_cart
+        except (ValueError, KeyError):
+            pass
+
+    return ses_cart
 
 
 @require_POST

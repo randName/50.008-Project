@@ -231,11 +231,7 @@ export default {
     },
     cart () {
       this.buy.dialog = false;
-      const params = {
-        item: this.item,
-        quantity: this.buy.quantity
-      }
-      console.log(params)
+      this.$cart.post(this.item.id, this.buy.quantity)
     },
     search (query) {
       this.$router.push({name: 'Search', query})
