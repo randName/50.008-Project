@@ -91,3 +91,15 @@ CREATE TABLE purchase_item(
     FOREIGN KEY (item_id) REFERENCES item(id) ON DELETE CASCADE,
     PRIMARY KEY (purchase_id, item_id)
 );
+
+/* TRIGGERS */
+
+DELIMITER |
+CREATE TRIGGER subtract_quantity AFTER INSERT ON purchase_item
+ FOR EACH ROW BEGIN
+      UPDATE item
+      SET item.quantity =  GREATEST(0, item.quantity - NEW.quantity)
+      WHERE item.id = NEW.id
+      and item.quantity > 0;
+ END; |
+DELIMITER ;
