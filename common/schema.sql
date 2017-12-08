@@ -95,11 +95,12 @@ CREATE TABLE purchase_item(
 /* TRIGGERS */
 
 DELIMITER |
-CREATE TRIGGER subtract_quantity AFTER INSERT ON purchase_item
+CREATE TRIGGER subtract_quantity BEFORE INSERT ON purchase_item
  FOR EACH ROW BEGIN
-      UPDATE item
-      SET item.quantity =  GREATEST(0, item.quantity - NEW.quantity)
-      WHERE item.id = NEW.id
-      and item.quantity > 0;
+    IF (SELECT quantity FROM item WHERE id = NEW.item_id) < NEW.quantity THEN
+        SET NEW.quantity = NULL;
+    ELSE
+        UPDATE item SET quantity = quantity - NEW.quantity WHERE id = NEW.item_id;
+    END IF;
  END; |
 DELIMITER ;
