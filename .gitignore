@@ -14,3 +14,7 @@ webpack-stats.json
 __pycache__/
 *.py[cod]
 *$py.class
+
+# OS Stuff
+.DS_Store
+._*
