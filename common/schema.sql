@@ -54,6 +54,7 @@ CREATE TABLE feedback(
     made_on DATETIME NOT NULL,
     score INTEGER NOT NULL,
     review TEXT NOT NULL,
+    CONSTRAINT score_range CHECK (score >= 0 AND score <= 10),
     FOREIGN KEY (item_id) REFERENCES item(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES auth_user(id) ON DELETE CASCADE,
     PRIMARY KEY (item_id, user_id)
@@ -64,6 +65,8 @@ CREATE TABLE rating(
     user_id INTEGER,
     rater_id INTEGER,
     usefulness INTEGER NOT NULL,
+    CONSTRAINT no_self_rate CHECK (user_id <> rater_id),
+    CONSTRAINT useful_range CHECK (usefulness >= 0 AND usefulness <= 2),
     FOREIGN KEY (item_id, user_id) REFERENCES feedback(item_id, user_id) ON DELETE CASCADE,
     FOREIGN KEY (rater_id) REFERENCES auth_user(id) ON DELETE CASCADE,
     PRIMARY KEY (item_id, user_id, rater_id)
@@ -88,3 +91,16 @@ CREATE TABLE purchase_item(
     FOREIGN KEY (item_id) REFERENCES item(id) ON DELETE CASCADE,
     PRIMARY KEY (purchase_id, item_id)
 );
+
+/* TRIGGERS */
+
+DELIMITER |
+CREATE TRIGGER subtract_quantity BEFORE INSERT ON purchase_item
+ FOR EACH ROW BEGIN
+    IF (SELECT quantity FROM item WHERE id = NEW.item_id) < NEW.quantity THEN
+        SET NEW.quantity = NULL;
+    ELSE
+        UPDATE item SET quantity = quantity - NEW.quantity WHERE id = NEW.item_id;
+    END IF;
+ END; |
+DELIMITER ;
