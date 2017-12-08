@@ -1,70 +1,80 @@
-# 50.008 Database Project
-Development of database-based system in Django
+# Solid Eureka
 
-# Setup
-    # MariaDB
-    sudo apt-get install mariadb-server libmysqlclient-dev
-    sudo mysql_secure_installation
+Solid Eureka is a web application with a database backend built using Django with the implemented
+features described below.
 
-    # Pipenv
-    pip install pipenv
-    pipenv --python 3.6
-    pipenv install
+## Features
+A few things that are implemented in Solid Eureka:
+* Registration
+* Feedback (Reviews)
+* Usefulness rating
+* Feedback query
+* Browsing (Search)
+* Ordering
+* Recommendation
+* User Record
+* Inventory management
+* Statistics
 
-    # configure and init database
-    cp .env.example .env
-    vi .env
-    pipenv run ./db.sh init
+## Getting Started
 
-    # webpack
-    npm install
-    npm build
+### Prerequisites
 
-# Features
+What you need to install and how to install them
 
-## Registration
-Using Django's auth mode and session DB module.
+```
+# MariaDB
+sudo apt-get install mariadb-server libmysqlclient-dev
+sudo mysql_secure_installation
 
-## Feedback (Reviews)
-- Date, Score (0 to 10), Optional text
-- One feedback per user per item
-- No changes allowed
+# Pipenv
+pip install pipenv
+pipenv --python 3.6
+pipenv install
 
-## Usefulness rating
-- 0 (Useless), 1 (Useful), 2 (Very Useful)
-- One rating per user per feedback
-- Not allowed to rate own feedback
+# configure and init database
+cp .env.example .env
+vi .env
+pipenv run ./db.sh init
 
-## Feedback query
-- Retrieve top N useful feedbacks
-- Ranked by average usefulness
-- N specified by user
+# webpack
+npm install
+npm build
+```
 
-## Browsing (Search)
-- Allow conjunctive queries on all combinations of fields
-- Allow sorting by year or average feedback score
+## Built With
 
-## Ordering
-- A user is able to order items in any quantity and type
-- Payment and Delivery not implemented
+* [Vue](https://vuejs.org/) - Front-End framework used
+* [Django](https://www.djangoproject.com/) - Back-End framework used
 
-## Recommendation
-- Upon ordering item A, suggest item B if there exists a user that bought both A and B
-- Sorted by sales to users who bought both items
+* [Web Pack](https://webpack.js.org/) - Dependency Management
+* [npm](https://www.npmjs.com/) - Package Manager for JavaScript
 
-## User Record
-Upon request, display current user's:
-- Account Information
-- Order History
-- Feedback History
-- List of others' Feedback rated by current user
+* [MariaDB](https://mariadb.org/) - Open Source Relational Database
 
-## Inventory management
-- Addition of new items
-- Arrival of stock
 
-## Statistics
-Every month, generate rankings based on sales for that month:
-- List of N most popular books 
-- List of N most popular authors
-- List of N most popular publishers
+## Entity Relationship Diagram
+![Alt text](misc/er-diagram.jpeg "ER Diagram")
+
+The relational schema SQL DDL code can be found [here](common/schema.sql)
+
+## Contributing
+
+Please read [CONTRIBUTING.md](misc/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## License
+
+This project is licensed under the Apache License - see the [LICENSE.md](misc/LICENSE.md) file for details
+
+## Authors
+
+* [Shun Git](https://github.com/randName)
+* [Guo Yuan Jing](https://github.com/guoyuanjing2988)
+* Jiang Tao
+* Wang Shuo
+* Lee Yue Ning
+* [Ong Wei Jie Joel](https://github.com/joelowj)
+
+## Acknowledgments
+* Dorien Herremans
+* [Jon Wong](https://github.com/jon-wong-sutd) guidance on Agile software development and inspiration to adopt a design thinking approach to Software Development for this project
