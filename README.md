@@ -18,8 +18,6 @@ A few things that are implemented in Solid Eureka:
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
 ### Prerequisites
 
 What you need to install and how to install them
@@ -58,6 +56,8 @@ npm build
 ## Entity Relationship Diagram
 ![Alt text](misc/er-diagram.jpeg "ER Diagram")
 
+The relational schema SQL DDL code can be found [here](common/schema.sql)
+
 ## Contributing
 
 Please read [CONTRIBUTING.md](misc/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
@@ -76,5 +76,5 @@ This project is licensed under the Apache License - see the [LICENSE.md](misc/LI
 * [Ong Wei Jie Joel](https://github.com/joelowj)
 
 ## Acknowledgments
-* Dorien Herremans, our course instructor.
-* [Jon Wong](https://github.com/jon-wong-sutd) guidance on Agile software development and inspiration to adopt a design thinking approach to Software Development for this project.
+* Dorien Herremans
+* [Jon Wong](https://github.com/jon-wong-sutd) guidance on Agile software development and inspiration to adopt a design thinking approach to Software Development for this project
