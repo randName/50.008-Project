@@ -231,7 +231,7 @@ export default {
     },
     cart () {
       this.buy.dialog = false;
-      this.$cart.post(this.item.id, this.buy.quantity)
+      this.$cart.post(this.item, this.buy.quantity)
     },
     search (query) {
       this.$router.push({name: 'Search', query})
