@@ -48,7 +48,10 @@
       <v-divider></v-divider>
       <v-list-tile v-for="i in links" :key="i.title" :to="{name: i.route}">
         <v-list-tile-action>
-          <v-icon>{{ i.action }}</v-icon>
+          <v-badge color="primary" v-model="i.badge && $cart.size">
+            <span slot="badge">{{ $cart.size }}</span>
+            <v-icon>{{ i.action }}</v-icon>
+          </v-badge>
         </v-list-tile-action>
         <v-list-tile-content>
           <v-list-tile-title>{{ i.route }}</v-list-tile-title>
@@ -113,8 +116,8 @@ export default {
       userdrop: false,
       searching: false,
       links: [
-        { route: 'Shop', action: 'store' },
-        { route: 'Cart', action: 'shopping_cart' }
+        { route: 'Shop', action: 'store', badge: false },
+        { route: 'Cart', action: 'shopping_cart', badge: true }
       ]
     }
   }
