@@ -5,6 +5,8 @@ def sql(query, *params):
     """Get rows from raw SQL query."""
     with connection.cursor() as cur:
         cur.execute(query, params)
+        if cur.lastrowid:
+            return cur.lastrowid
         return cur.fetchall()
 
 

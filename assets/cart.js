@@ -15,7 +15,11 @@ export const CartManager = new Vue({
     },
     methods: {
         submit () {
-            console.log(this.items)
+            return axios.post('/order/submit', {order: this.items}).then(this.ordered)
+        },
+        ordered (response) {
+            this.order = response.data.data
+            this.items = []
         },
         update (response) {
             this.items = response.data.data
@@ -30,11 +34,13 @@ export const CartManager = new Vue({
             return axios.post('/order/cart', params).then(this.update)
         },
         get () {
+            this.order = {}
             return axios.get('/order/cart').then(this.update)
         }
     },
     data () {
         return {
+            order: {},
             items: []
         }
     }

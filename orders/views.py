@@ -42,8 +42,35 @@ def submit(request):
     """Inserts order into database."""
     if not request.user.is_authenticated:
         raise PermissionDenied(NOT_LOGGED_IN)
+    q = 'SELECT price FROM item WHERE id = %s'
+    sp = """INSERT INTO purchase (id, made_on, user_id, total)
+            VALUES (DEFAULT, NOW(), %s, %s)"""
+    si = """INSERT INTO purchase_item (purchase_id, item_id, quantity)
+            VALUES (%s, %s, %s)"""
+    uid = request.user.id
+    pid = None
+    items = []
+    total = 0
+    try:
+        rq = loads(request.body)
+        for item in rq['order']:
+            iid = int(item['id'])
+            qty = int(item['quantity'])
+            try:
+                total += qty*sql(q, iid)[0][0]
+                items.append((iid, qty))
+            except IndexError:
+                pass
+    except (ValueError, KeyError):
+        return {}
 
-    return {}
+    if items:
+        pid = sql(sp, uid, total)
+        for iid, qty in items:
+            sql(si, pid, iid, qty)
+
+    request.session.pop('cart', None)
+    return {'id': pid, 'total': total}
 
 
 @json_response
