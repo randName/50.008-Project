@@ -7,7 +7,7 @@
     <v-data-table hide-actions select-all
       v-model="selected"
       :headers="headers"
-      :items="items"
+      :items="$cart.items"
     >
       <template slot="items" slot-scope="props">
         <td><v-checkbox primary hide-details v-model="props.selected"></v-checkbox></td>
@@ -32,12 +32,9 @@
 export default {
   computed: {
     total () {
-      const c = this.items.reduce((i, v) => i + v.quantity*v.price, 0)
+      const c = this.$cart.items.reduce((i, v) => i + v.quantity*v.price, 0)
       return c ? c.toFixed(2) : '0.00'
     },
-    items () {
-      return Object.values(this.$cart.items)
-    }
   },
   methods: {
     submit () {

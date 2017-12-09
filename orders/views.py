@@ -21,19 +21,19 @@ def cart(request):
             i = int(rq['id'])
             q = int(rq['quantity'])
             if q > 0:
-                ses_cart[i] = {
+                ses_cart[str(i)] = {
                     'id': i,
                     'quantity': q,
                     'name': rq['name'],
                     'price': float(rq['price']),
                 }
             else:
-                ses_cart.pop(i, None)
+                ses_cart.pop(str(i), None)
             request.session['cart'] = ses_cart
         except (ValueError, KeyError):
             pass
 
-    return ses_cart
+    return (i for i in ses_cart.values())
 
 
 @require_POST

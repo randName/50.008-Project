@@ -6,8 +6,10 @@ axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 
 export const CartManager = new Vue({
     computed: {
-        size: { set (v) {}, get () {
-            return Object.keys(this.items).length
+        size: {
+            set (v) {},
+            get () {
+                return this.items.length
             }
         }
     },
@@ -33,7 +35,7 @@ export const CartManager = new Vue({
     },
     data () {
         return {
-            items: {}
+            items: []
         }
     }
 })
