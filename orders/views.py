@@ -18,12 +18,17 @@ def cart(request):
     if request.method == 'POST':
         try:
             rq = loads(request.body)
-            ses_cart[rq['id']] = {
-                'id': int(rq['id']),
-                'name': rq['name'],
-                'price': float(rq['price']),
-                'quantity': int(rq['quantity']),
-            }
+            i = int(rq['id'])
+            q = int(rq['quantity'])
+            if q > 0:
+                ses_cart[i] = {
+                    'id': i,
+                    'quantity': q,
+                    'name': rq['name'],
+                    'price': float(rq['price']),
+                }
+            else:
+                ses_cart.pop(i, None)
             request.session['cart'] = ses_cart
         except (ValueError, KeyError):
             pass

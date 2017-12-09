@@ -52,8 +52,10 @@
             {{ item.quantity }}
           </v-chip>
           <v-spacer></v-spacer>
-          <v-dialog v-model="buy.dialog">
-            <v-btn color="primary" slot="activator">Add to Cart</v-btn>
+          <v-dialog v-model="buy.dialog" :disabled="!item.quantity">
+            <v-btn color="primary" slot="activator" :disabled="!item.quantity">
+              {{ item.quantity ? 'Add to Cart' : 'Out of Stock' }}
+            </v-btn>
             <v-card>
               <v-card-title>
                 <div class="headline">Add to Cart</div>
