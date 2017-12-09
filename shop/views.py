@@ -3,7 +3,7 @@ from json import loads
 from django.http import Http404
 from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
-from django.views.decorators.csrf import requires_csrf_token
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 from common.db import sql, count, page
 from common.utils import pagination, obj
@@ -13,7 +13,7 @@ from common.decorators import json_response
 m2m = ('creator', 'category')
 
 
-@requires_csrf_token
+@ensure_csrf_cookie
 def index(request):
     """Main page of site."""
     return render(request, 'shop/index.html')
