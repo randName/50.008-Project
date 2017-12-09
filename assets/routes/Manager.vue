@@ -7,7 +7,17 @@
           <div class="headline">Most Popular</div>
         </v-card-title>
         <v-card-text>
-          <v-select label="Type" :items="entities" v-model="etype"></v-select>
+          <v-layout row>
+            <v-flex xs8>
+              <v-select label="Type" :items="entities" v-model="etype"></v-select>
+            </v-flex>
+            <v-flex xs4>
+              <v-text-field type="number" min="0"
+                v-model="topnum"
+                label="Count"
+              ></v-text-field>
+            </v-flex>
+          </v-layout>
           <v-dialog persistent lazy full-width v-model="modal" width="290px">
             <v-text-field readonly
               slot="activator" v-model="date"
@@ -24,7 +34,7 @@
             </v-date-picker>
           </v-dialog>
           <v-list v-if="popular.length">
-            <v-list-tile v-for="i in popular">
+            <v-list-tile v-for="i in popular" :key="i[etype].id">
               <v-list-tile-content>
                 <v-list-tile-title>
                   {{ i[etype].name }}
@@ -47,6 +57,9 @@
 <script>
 export default {
   watch: {
+    topnum (val) {
+      this.gettop()
+    },
     date (val) {
       this.gettop()
     },
@@ -58,7 +71,8 @@ export default {
     gettop () {
       if (this.date === null || this.etype === null) return
       const [year, month] = this.date.split('-')
-      this.$http.get(`/admin/stats/${this.etype}/${year}/${month}`)
+      const params = {per_page: this.topnum}
+      this.$http.get(`/admin/stats/${this.etype}/${year}/${month}`, {params})
       .then(r => this.popular = r.data.data)
     }
   },
@@ -69,6 +83,7 @@ export default {
   },
   data () {
     return {
+      topnum: 10,
       date: null,
       etype: null,
       modal: false,
