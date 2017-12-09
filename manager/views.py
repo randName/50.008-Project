@@ -16,19 +16,32 @@ def new(request):
     """Add item or entity into inventory."""
     if not request.user.is_staff:
         raise PermissionDenied(NOT_STAFF)
-
-    s = """INSERT INTO item (id, name)
-            VALUES (DEFAULT, %s)"""
+    values = []
+    m2m = {'category': [], 'creator': []}
+    sc = 'INSERT INTO item_{0} (item_id, {0}_id) VALUES (%s, %s)'
+    si = """INSERT INTO item (id, name, description, date_created,
+            company_id, quantity, price)
+            VALUES (DEFAULT, %s, %s, %s, %s, %s, %s)"""
     try:
         rq = loads(request.body)
-        # sanitize before inserting
-        values = (rq['name'],)
+        values.extend(rq[k] for k in ('name', 'description', 'date'))
+        values.extend(int(rq[k]) for k in ('company', 'quantity'))
+        values.append(float(rq['price']))
+        for k, v in m2m.items():
+            for c in rq.get(k, ()):
+                try:
+                    v.append(int(c))
+                except ValueError:
+                    pass
     except (ValueError, KeyError):
-        return None
+        return {}
 
-    sql(s, *values)
+    iid = sql(si, *values)
+    for k, v in m2m.items():
+        for i in v:
+            sql(sc.format(k), iid, i)
 
-    return {}
+    return {'id': iid}
 
 
 @json_response
