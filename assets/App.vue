@@ -22,6 +22,7 @@ export default {
   },
   created () {
     this.$user.get()
+    this.$cart.get()
   },
   components: {
     NavBar

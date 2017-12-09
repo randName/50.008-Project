@@ -52,15 +52,33 @@
             {{ item.quantity }}
           </v-chip>
           <v-spacer></v-spacer>
-          <v-dialog v-model="dialog">
-            <v-btn color="primary" slot="activator">Add to Cart</v-btn>
+          <v-dialog v-model="buy.dialog" :disabled="!item.quantity">
+            <v-btn color="primary" slot="activator" :disabled="!item.quantity">
+              {{ item.quantity ? 'Add to Cart' : 'Out of Stock' }}
+            </v-btn>
             <v-card>
               <v-card-title>
                 <div class="headline">Add to Cart</div>
               </v-card-title>
               <v-card-text>
-                Quantity Chooser
+                <v-layout row wrap>
+                  <v-flex xs9>
+                    <v-slider thumb-label
+                     ticks step="1" min="1"
+                     label="Quantity"
+                     :max="item.quantity"
+                     v-model="buy.quantity"
+                    ></v-slider>
+                  </v-flex>
+                  <v-flex xs3>
+                    <v-text-field v-model="buy.quantity" type="number"></v-text-field>
+                  </v-flex>
+                </v-layout>
               </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" @click="cart">Add</v-btn>
+              </v-card-actions>
             </v-card>
           </v-dialog>
         </v-card-actions>
@@ -213,6 +231,10 @@ export default {
       this.$http.post(`/rate/${this.item.id}/${u}`, {usefulness: v})
         .then(() => this.getFB())
     },
+    cart () {
+      this.buy.dialog = false;
+      this.$cart.post(this.item, this.buy.quantity)
+    },
     search (query) {
       this.$router.push({name: 'Search', query})
     }
@@ -242,7 +264,10 @@ export default {
       },
       valid: true,
       feedback: [],
-      dialog: false,
+      buy: {
+        quantity: 0,
+        dialog: false
+      },
       item: {
         id: null
       }

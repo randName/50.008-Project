@@ -17,6 +17,10 @@ Vue.prototype.$http = axios.create({
 import {UserManager} from './user'
 Vue.prototype.$user = UserManager
 
+// Cart Manager
+import {CartManager} from './cart'
+Vue.prototype.$cart = CartManager
+
 // Routes
 import App from './App.vue'
 import Shop from './routes/Shop.vue'
