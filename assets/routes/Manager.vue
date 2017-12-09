@@ -4,6 +4,47 @@
     <v-flex xs12>
       <v-card>
         <v-card-title primary-title>
+          <div class="headline">Inventory Management</div>
+        </v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-dialog v-model="stock.dialog" persistent>
+            <v-btn slot="activator">Update stock</v-btn>
+            <v-card>
+              <v-card-title>
+                <div class="headline">Update Stock</div>
+              </v-card-title>
+              <v-card-text>
+                <v-select dense clearable ref="stockselect"
+                  autocomplete cache-items
+                  :search-input.sync="stock.search"
+                  placeholder="Search for item"
+                  :loading="stock.loading"
+                  v-model="stock.id"
+                  :items="stock.items"
+                  label="Item"
+                >
+                </v-select>
+                <v-text-field type="number" min="0"
+                  v-model="stock.item.quantity"
+                  label="Stock"
+                ></v-text-field>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn @click="stock.dialog=false">Cancel</v-btn>
+                <v-btn color="primary" @click="stockupdate">Update</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-card-actions>
+      </v-card>
+    </v-flex>
+  </v-layout>
+  <v-layout row wrap>
+    <v-flex xs12>
+      <v-card>
+        <v-card-title primary-title>
           <div class="headline">Most Popular</div>
         </v-card-title>
         <v-card-text>
@@ -57,6 +98,22 @@
 <script>
 export default {
   watch: {
+    'stock.search' (val) {
+      if (val && val.length >= 3) {
+        const params = {name: val}
+        this.stock.loading = true
+        this.$nextTick(() => this.$http.get('/search', {params})
+          .then(r => {
+            this.stock.items = r.data.data.map(e => ({text: e.name, value: e.id}))
+            this.stock.loading = false
+        }))
+      }
+    },
+    'stock.id' (val) {
+      this.$http.get('/admin/stock/' + val)
+      .then(r => this.stock.item = r.data.data)
+      .catch(r => this.stock.item = {quantity: null})
+    },
     topnum (val) {
       this.gettop()
     },
@@ -68,6 +125,14 @@ export default {
     }
   },
   methods: {
+    stockupdate () {
+      this.$http.post('/admin/stock/' + this.stock.id, this.stock.item)
+      .then(r => {
+        this.stock.loading = false
+        this.stock.dialog = false
+        this.stock.id = null
+      })
+    },
     gettop () {
       if (this.date === null || this.etype === null) return
       const [year, month] = this.date.split('-')
@@ -88,6 +153,16 @@ export default {
       etype: null,
       modal: false,
       popular: [],
+      stock: {
+        item: {
+          quantity: null
+        },
+        items: [],
+        search: null,
+        select: null,
+        dialog: false,
+        loading: false
+      },
       entities: [
         {text: 'Items', value: 'item'},
         {text: 'Creators', value: 'creator'},
