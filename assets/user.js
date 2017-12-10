@@ -11,9 +11,15 @@ export const UserManager = new Vue({
             this.user = response.data.data
         },
         get () {
+            if (this.user.id !== undefined) {
+                return Promise.resolve(this.user)
+            }
             return axios.get('/user/details').then(this.update)
         },
         getdetails () {
+            if (!this.user.is_authenticated) {
+                return Promise.resolve(null)
+            }
             let details = ['orders', 'ratings', 'feedbacks']
             return axios.all(details.map(
                 d => axios.get('/user/' + d)
