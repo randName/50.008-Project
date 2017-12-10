@@ -23,10 +23,10 @@ def index(request):
 def entity(request):
     """Get entity details."""
     etypes = ('company',) + m2m
+    etype = request.GET.get('type')
     nq = request.GET.get('q')
     if not nq:
         try:
-            etype = request.GET.get('type')
             eid = int(request.GET.get('id', ''))
         except ValueError:
             return None
@@ -39,6 +39,9 @@ def entity(request):
 
     q = 'SELECT id, name FROM {} WHERE LOWER(name) LIKE %s LIMIT 3'
     nq = '%' + nq.lower() + '%'
+
+    if etype:
+        etypes = set(etype.split(',')) & set(etypes)
 
     results = []
     for e in etypes:
