@@ -1,5 +1,5 @@
 # Solid Eureka
-
+![Solid Eureka's Landing Page](img/landing_page.png)
 Solid Eureka is a web application with a database backend built using Django with the implemented
 features described below.
 
@@ -45,6 +45,8 @@ npm build
 ## Built With
 
 * [Vue](https://vuejs.org/) - Front-End framework used
+* [Vuetify](https://vuetifyjs.com/) - Material Component Framework
+
 * [Django](https://www.djangoproject.com/) - Back-End framework used
 
 * [Web Pack](https://webpack.js.org/) - Dependency Management
@@ -60,11 +62,11 @@ The relational schema SQL DDL code can be found [here](common/schema.sql)
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](misc/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## License
 
-This project is licensed under the Apache License - see the [LICENSE.md](misc/LICENSE.md) file for details
+This project is licensed under the Apache License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Authors
 
