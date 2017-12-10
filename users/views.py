@@ -1,5 +1,4 @@
 from django.forms import ValidationError
-from django.shortcuts import render, redirect
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -11,33 +10,25 @@ from common.messages import NOT_LOGGED_IN
 from common.decorators import json_response
 
 
-def registration(request):
-    """Registration page for new users."""
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=password)
-            login(request, user)
-            return redirect('profile')
-    else:
-        form = UserCreationForm()
-    return render(request, 'registration/register.html', {'form': form})
-
-
 @json_response
 def alogin(request):
     """AJAX login/registration."""
+    pkey = 'password'
     if request.method == 'POST':
-        form = AuthenticationForm(data=request.POST)
+        if 'password2' in request.POST:
+            pkey = 'password1'
+            form = UserCreationForm(request.POST)
+            if form.is_valid():
+                form.save()
+        else:
+            form = AuthenticationForm(data=request.POST)
+
         if not form.is_valid():
             errors = [' '.join(v) for v in form.errors.values()]
             raise ValidationError(errors)
 
         username = form.cleaned_data.get('username')
-        password = form.cleaned_data.get('password')
+        password = form.cleaned_data.get(pkey)
 
         user = authenticate(username=username, password=password)
         login(request, user)

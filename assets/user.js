@@ -11,9 +11,6 @@ export const UserManager = new Vue({
             this.user = response.data.data
         },
         get () {
-            if (this.user.id !== undefined) {
-                return Promise.resolve(this.user)
-            }
             return axios.get('/user/details').then(this.update)
         },
         getdetails () {
