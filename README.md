@@ -1,20 +1,26 @@
 # Solid Eureka
-
+![Solid Eureka's Landing Page](img/landing_page.png)
 Solid Eureka is a web application with a database backend built using Django with the implemented
 features described below.
 
 ## Features
-A few things that are implemented in Solid Eureka:
+Some of the features available in Solid Eureka:
 * Registration
+![Solid Eureka's Registration Page](img/registration.png)
 * Feedback (Reviews)
-* Usefulness rating
-* Feedback query
-* Browsing (Search)
+![Solid Eureka's Feedback Page](img/item_information.png)
+* Browsing (Search) & Usefulness rating
+![Solid Eureka's Browsing & Usefulness Page](img/search_item.png)
 * Ordering
+![Solid Eureka's Ordering Page](img/cart.png)
 * Recommendation
+![Solid Eureka's Recommendation Page](img/recommendation.png)
 * User Record
+![Solid Eureka's User Page](img/user.png)
 * Inventory management
+![Solid Eureka's Inventory Management Page](img/inventory_management.png)
 * Statistics
+![Solid Eureka's Statistics Management Page](img/statistic.png)
 
 ## Getting Started
 
@@ -45,6 +51,8 @@ npm build
 ## Built With
 
 * [Vue](https://vuejs.org/) - Front-End framework used
+* [Vuetify](https://vuetifyjs.com/) - Material Component Framework
+
 * [Django](https://www.djangoproject.com/) - Back-End framework used
 
 * [Web Pack](https://webpack.js.org/) - Dependency Management
@@ -54,17 +62,17 @@ npm build
 
 
 ## Entity Relationship Diagram
-![Alt text](misc/er-diagram.jpeg "ER Diagram")
+![Alt text](img/er-diagram.jpeg "ER Diagram")
 
 The relational schema SQL DDL code can be found [here](common/schema.sql)
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](misc/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## License
 
-This project is licensed under the Apache License - see the [LICENSE.md](misc/LICENSE.md) file for details
+This project is licensed under the Apache License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Authors
 
