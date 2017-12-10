@@ -6,15 +6,21 @@ features described below.
 ## Features
 A few things that are implemented in Solid Eureka:
 * Registration
+![Solid Eureka's Registration Page](img/registration.png)
 * Feedback (Reviews)
-* Usefulness rating
-* Feedback query
-* Browsing (Search)
+![Solid Eureka's Feedback Page](img/item_information.png)
+* Browsing (Search) & Usefulness rating
+![Solid Eureka's Browsing & Usefulness Page](img/search_item.png)
 * Ordering
+![Solid Eureka's Ordering Page](img/cart.png)
 * Recommendation
+![Solid Eureka's Recommendation Page](img/recommendation.png)
 * User Record
+![Solid Eureka's User Page](img/user.png)
 * Inventory management
+![Solid Eureka's Inventory Management Page](img/inventory_management.png)
 * Statistics
+![Solid Eureka's Statistics Management Page](img/statistics.png)
 
 ## Getting Started
 
@@ -56,7 +62,7 @@ npm build
 
 
 ## Entity Relationship Diagram
-![Alt text](misc/er-diagram.jpeg "ER Diagram")
+![Alt text](img/er-diagram.jpeg "ER Diagram")
 
 The relational schema SQL DDL code can be found [here](common/schema.sql)
 
