@@ -179,6 +179,33 @@
       </v-card>
     </v-flex>
   </v-layout>
+  <v-layout v-if="recommends.length > 0" row wrap>
+    <v-flex xs12>
+      <v-card>
+        <v-card-title primary-title>
+          <div class="headline">Recommended Items</div>
+        </v-card-title>
+        <v-list two-line>
+          <v-list-tile avatar v-for="f in recommends" :key="f.id">
+            <v-list-tile-content>
+              <v-list-tile-title>{{ f.name }}</v-list-tile-title>
+              <v-list-tile-sub-title>
+                {{ f.users }} bought this item
+              </v-list-tile-sub-title>
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-list-tile-action-text>
+                Sales: {{ f.sales }}
+              </v-list-tile-action-text>
+              <v-btn icon :to="{name: 'Item', params: {id: f.id}}">
+                <v-icon>keyboard_arrow_right</v-icon>
+              </v-btn>
+            </v-list-tile-action>
+          </v-list-tile>
+        </v-list>
+      </v-card>
+    </v-flex>
+  </v-layout>
 </v-container>
 </template>
 
@@ -194,6 +221,8 @@ export default {
       this.$http.get('/item/' + id)
       .then(r => this.item = r.data.data)
       .catch(e => this.$router.go(-1))
+      this.$http.get('/recommends/' + id)
+      .then(r => this.recommends = r.data.data)
       this.getFB(id)
     },
     getFB (id) {
@@ -263,6 +292,7 @@ export default {
         review: ''
       },
       valid: true,
+      recommends: [],
       feedback: [],
       buy: {
         quantity: 0,
