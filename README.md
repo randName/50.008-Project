@@ -4,7 +4,7 @@ Solid Eureka is a web application with a database backend built using Django wit
 features described below.
 
 ## Features
-A few things that are implemented in Solid Eureka:
+Some of the features available in Solid Eureka:
 * Registration
 ![Solid Eureka's Registration Page](img/registration.png)
 * Feedback (Reviews)
@@ -20,7 +20,7 @@ A few things that are implemented in Solid Eureka:
 * Inventory management
 ![Solid Eureka's Inventory Management Page](img/inventory_management.png)
 * Statistics
-![Solid Eureka's Statistics Management Page](img/statistics.png)
+![Solid Eureka's Statistics Management Page](img/statistic.png)
 
 ## Getting Started
 
