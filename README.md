@@ -2,6 +2,7 @@
 ![Solid Eureka's Landing Page](img/landing_page.png)
 Solid Eureka is a web application with a database backend built using Django with the implemented
 features described below.
+We employed some decisions and [practices](practices.md).
 
 ## Features
 Some of the features available in Solid Eureka:
