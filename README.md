@@ -77,12 +77,12 @@ This project is licensed under the Apache License - see the [LICENSE.md](LICENSE
 
 ## Authors
 
-* [Shun Git](https://github.com/randName)
-* [Guo Yuan Jing](https://github.com/guoyuanjing2988)
-* Jiang Tao
-* Wang Shuo
-* Lee Yue Ning
-* [Ong Wei Jie Joel](https://github.com/joelowj)
+* [Shun Git](https://github.com/randName) (1001557)
+* [Guo Yuan Jing](https://github.com/guoyuanjing2988) (1001424)
+* [Jiang Tao](https://github.com/Felicity-jt) (1001431)
+* Wang Shuo (1001416)
+* Lee Yue Ning (1001732)
+* [Ong Wei Jie Joel](https://github.com/joelowj) (1001491)
 
 ## Acknowledgments
 * Dorien Herremans
